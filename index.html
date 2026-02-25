@@ -4,10 +4,63 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>My Google AI Studio App</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS from CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+      @layer base {
+        body {
+          @apply antialiased;
+        }
+      }
+      
+      @layer utilities {
+        .animate-float {
+          animation: float 3s ease-in-out infinite;
+        }
+      }
+      
+      @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- React from CDN -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <script type="module">
+      // Your data here (from src/data.ts)
+      const data = {
+        // Add your data content here
+      };
+      
+      // Your App component (from src/App.tsx)
+      const App = () => {
+        return (
+          <div>
+            {/* Add your JSX here */}
+          </div>
+        );
+      };
+      
+      // Render app (from src/main.tsx)
+      const root = ReactDOM.createRoot(document.getElementById('root'));
+      root.render(
+        React.createElement(
+          React.StrictMode,
+          null,
+          React.createElement(App)
+        )
+      );
+    </script>
   </body>
 </html>
-
