@@ -3,58 +3,176 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>React Google Sites App</title>
+    <title>China's Hidden Wonders</title>
     
-    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800;900&display=swap" rel="stylesheet">
 
     <style>
-        /* 您原本 index.css 的內容可以寫在這裡 */
+        /* 整合 index.css 的自定義動畫 */
         body {
-            font-family: sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+            font-family: 'Nunito', sans-serif;
             margin: 0;
-            background-color: #f0f2f5;
+            padding: 0;
+            overflow-x: hidden;
+            background-color: #f5f5f4; /* stone-100 */
         }
-        .app-container {
-            padding: 20px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
         }
+        .animate-float {
+            animation: float 3s ease-in-out infinite;
+        }
+        /* 隱藏捲軸但保持功能 */
+        ::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body>
     <div id="root"></div>
 
-    <script type="text/babel">
-        const { useState } = React;
+    <script type="importmap">
+    {
+      "imports": {
+        "react": "https://esm.sh/react@19?dev",
+        "react-dom": "https://esm.sh/react-dom@19?dev",
+        "react-dom/client": "https://esm.sh/react-dom@19/client?dev",
+        "motion/react": "https://esm.sh/framer-motion@11",
+        "lucide-react": "https://esm.sh/lucide-react",
+        "canvas-confetti": "https://esm.sh/canvas-confetti",
+        "clsx": "https://esm.sh/clsx",
+        "tailwind-merge": "https://esm.sh/tailwind-merge"
+      }
+    }
+    </script>
 
-        // 這是您的 App 元件內容
+    <script type="module">
+        import React, { useState, useEffect, useCallback, useMemo } from 'react';
+        import { createRoot } from 'react-dom/client';
+        import { motion, AnimatePresence } from 'motion/react';
+        import * as Lucide from 'lucide-react';
+        import confetti from 'canvas-confetti';
+        import { clsx } from 'clsx';
+        import { twMerge } from 'tailwind-merge';
+
+        // --- 這裡放入 data.ts 的內容 ---
+        const LANDMARKS = [
+            {
+                id: 'great-wall',
+                name: 'The Great Wall',
+                type: 'Man-made',
+                measurement: '21,196 km long',
+                questionType: 'length',
+                prideFact: 'Symbol of unity and history',
+                typeHint: 'This was built by thousands of workers using stone and brick many years ago.',
+                icon: 'Castle',
+                color: 'bg-orange-400',
+                x: 75,
+                y: 25,
+                image: 'https://images.unsplash.com/photo-1508804185872-d7badad00f7d?auto=format&fit=crop&w=1200&q=80'
+            },
+            {
+                id: 'yangtze-river',
+                name: 'The Yangtze River',
+                type: 'Natural',
+                measurement: '6,300 km long',
+                questionType: 'length',
+                prideFact: 'The mother river of China',
+                typeHint: 'A natural wonder of water.',
+                icon: 'Waves',
+                color: 'bg-blue-400',
+                x: 40,
+                y: 60,
+                image: 'https://images.unsplash.com/photo-1543333995-a78ee96b9201?auto=format&fit=crop&w=1200&q=80'
+            }
+            // ... 這裡可以繼續加入其他 data.ts 裡的資料
+        ];
+
+        // --- 輔助函式 ---
+        function cn(...inputs) {
+            return twMerge(clsx(inputs));
+        }
+
+        const playSound = (type) => {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            if (type === 'success') {
+                osc.frequency.setValueAtTime(440, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.2);
+            } else {
+                osc.frequency.setValueAtTime(150, ctx.currentTime);
+            }
+            osc.start();
+            osc.stop(ctx.currentTime + 0.2);
+        };
+
+        // --- App 元件核心 ---
         function App() {
+            const [gameState, setGameState] = useState('start'); // start, exploring, landmark, result
+            const [foundLandmarks, setFoundLandmarks] = useState([]);
+
+            const handleStart = () => {
+                playSound('success');
+                setGameState('exploring');
+            };
+
             return (
-                <div className="app-container">
-                    <h1>你好！這是在 Google Sites 運行的 React</h1>
-                    <p>這是一個單一檔案測試版本。</p>
-                    <button onClick={() => alert('按鈕運作正常！')}>
-                        點擊測試
-                    </button>
+                <div className="min-h-screen bg-stone-100 flex flex-col items-center justify-center p-4">
+                    <AnimatePresence mode="wait">
+                        {gameState === 'start' && (
+                            <motion.div 
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.9 }}
+                                className="text-center"
+                            >
+                                <Lucide.Map className="w-24 h-24 mx-auto text-orange-500 mb-6 animate-float" />
+                                <h1 className="text-5xl font-black text-stone-800 mb-4">China's Hidden Wonders</h1>
+                                <p className="text-xl text-stone-600 mb-8">準備好探索中國的壯麗奇觀了嗎？</p>
+                                <button 
+                                    onClick={handleStart}
+                                    className="bg-orange-500 hover:bg-orange-600 text-white text-2xl font-bold py-4 px-12 rounded-full shadow-xl transition-all hover:scale-105"
+                                >
+                                    開始冒險之旅
+                                </button>
+                            </motion.div>
+                        )}
+
+                        {gameState === 'exploring' && (
+                            <motion.div 
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                className="w-full max-w-4xl bg-white rounded-3xl shadow-2xl p-8 text-center"
+                            >
+                                <h2 className="text-3xl font-bold mb-6">點擊地圖標記進行探索</h2>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    {LANDMARKS.map(l => (
+                                        <button 
+                                            key={l.id}
+                                            onClick={() => {
+                                                confetti();
+                                                alert(`你發現了：${l.name}！\n測量值：${l.measurement}`);
+                                            }}
+                                            className={`${l.color} p-6 rounded-2xl text-white font-bold text-xl hover:brightness-110 transition-all`}
+                                        >
+                                            {l.name}
+                                        </button>
+                                    ))}
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </div>
             );
         }
 
-        // 對應您原本 main.tsx 的渲染邏輯
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(
-            <React.StrictMode>
-                <App />
-            </React.StrictMode>
-        );
+        // --- 渲染 ---
+        const root = createRoot(document.getElementById('root'));
+        root.render(<App />);
     </script>
 </body>
 </html>
