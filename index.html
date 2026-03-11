@@ -9,12 +9,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800;900&display=swap" rel="stylesheet">
 
     <style>
-        /* 整合 index.css */
         body {
             font-family: 'Nunito', ui-sans-serif, system-ui, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f5f5f4; /* stone-100 */
+            margin: 0; padding: 0;
+            background-color: #f5f5f4;
             overflow-x: hidden;
         }
         @keyframes float {
@@ -23,8 +21,6 @@
         }
         .animate-float { animation: float 3s ease-in-out infinite; }
         ::-webkit-scrollbar { display: none; }
-        
-        /* 地圖背景風格 */
         .map-bg {
             background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
             background-size: 20px 20px;
@@ -50,7 +46,7 @@
     </script>
 
     <script type="module">
-        import React, { useState, useEffect, useMemo } from 'react';
+        import React, { useState } from 'react';
         import { createRoot } from 'react-dom/client';
         import { motion, AnimatePresence } from 'motion/react';
         import * as Lucide from 'lucide-react';
@@ -58,194 +54,141 @@
         import { clsx } from 'clsx';
         import { twMerge } from 'tailwind-merge';
 
-        // --- 完整資料庫 (來自 data.ts) ---
+        // --- 完整資料庫 (來自你提供的 data.ts) ---
         const LANDMARKS = [
             {
                 id: 'great-wall',
                 name: '萬里長城 (The Great Wall)',
                 type: 'Man-made',
-                measurement: '長度：21,196 公里',
+                measurement: '21,196 km 長',
                 questionType: 'length',
-                prideFact: '它是中華民族統一與歷史的象徵。',
-                typeHint: '這是由成千上萬的工人在多年前使用石頭和磚塊建造的。',
+                prideFact: '統一與歷史的象徵',
+                typeHint: '由成千上萬的工人使用石頭和磚塊建造。',
                 icon: 'Castle',
                 color: 'bg-orange-400',
                 x: 75, y: 25,
-                image: 'https://images.unsplash.com/photo-1508804185872-d7badad00f7d?auto=format&fit=crop&w=800'
+                image: 'https://images.unsplash.com/photo-1508804185872-d7badad00f7d?auto=format&fit=crop&w=1200&q=80'
             },
             {
                 id: 'yangtze-river',
                 name: '長江 (The Yangtze River)',
                 type: 'Natural',
-                measurement: '長度：6,300 公里',
+                measurement: '6,300 km 長',
                 questionType: 'length',
-                prideFact: '中國的母親河，世界第三長河。',
-                typeHint: '這是一個充滿水的自然奇觀。',
+                prideFact: '中國的母親河',
+                typeHint: '自然形成的水之奇觀。',
                 icon: 'Waves',
                 color: 'bg-blue-400',
                 x: 40, y: 60,
-                image: 'https://images.unsplash.com/photo-1543333995-a78ee96b9201?auto=format&fit=crop&w=800'
+                image: 'https://images.unsplash.com/photo-1543333995-a78ee96b9201?auto=format&fit=crop&w=1200&q=80'
             },
             {
                 id: 'oriental-pearl',
-                name: '東方明珠電視塔',
+                name: '東方明珠塔',
                 type: 'Man-made',
-                measurement: '高度：468 公尺',
+                measurement: '468 m 高',
                 questionType: 'height',
-                prideFact: '上海享譽世界的標誌性建築。',
-                typeHint: '由建築師設計，工人使用鋼鐵和玻璃建造的高塔。',
-                icon: 'Tower',
+                prideFact: '上海享譽世界的電視塔',
+                typeHint: '工程師設計並使用鋼鐵與玻璃建造。',
+                icon: 'Building2',
                 color: 'bg-indigo-400',
-                x: 82, y: 52,
-                image: 'https://images.unsplash.com/photo-1538423124522-d27883bc2936?auto=format&fit=crop&w=800'
+                x: 80, y: 50,
+                image: 'https://www.visitourchina.com/FileUpload/newpicture/cities/shanghai/dongfangmingzhu1.jpg'
             },
             {
                 id: 'leshan-buddha',
                 name: '樂山大佛',
                 type: 'Man-made',
-                measurement: '高度：71 公尺',
-                prideFact: '古代藝術的傑作，歷時90年建成。',
-                typeHint: '古代工匠在1000多年前直接在石崖上雕刻而成的巨型佛像。',
+                measurement: '71 m 高',
+                questionType: 'height',
+                prideFact: '古代藝術的驚人傑作',
+                typeHint: '古代工匠在一千多年前直接在石壁上雕刻而成。',
                 icon: 'User',
                 color: 'bg-emerald-400',
-                x: 45, y: 45,
-                image: 'https://images.unsplash.com/photo-1599839619722-39751411833d?auto=format&fit=crop&w=800'
+                x: 55, y: 35,
+                image: 'https://chinaexplorertour.com/wp-content/uploads/2025/12/e3ae1b1e2b89450696f8d35a879b369e.jpg'
             },
             {
                 id: 'hzm-bridge',
                 name: '港珠澳大橋',
                 type: 'Man-made',
-                measurement: '長度：55 公里',
-                prideFact: '世界上最長的跨海大橋。',
-                typeHint: '這是現代工程的奇蹟，連接了三個城市。',
-                icon: 'Bridge',
+                measurement: '55 km 長',
+                questionType: 'length',
+                prideFact: '連接香港、珠海、澳門的奇蹟',
+                typeHint: '現代工程技術建造的超長跨海大橋。',
+                icon: 'Waypoints',
                 color: 'bg-cyan-500',
-                x: 70, y: 85,
-                image: 'https://images.unsplash.com/photo-1590402444521-4a30e8c3f4a0?auto=format&fit=crop&w=800'
+                x: 72, y: 82,
+                image: 'https://images.unsplash.com/photo-1590402444521-4a30e8c3f4a0?auto=format&fit=crop&w=1200&q=80'
             }
         ];
 
-        // 圖標對照表
+        // 圖標對照
         const IconMap = {
             Castle: Lucide.Castle,
             Waves: Lucide.Waves,
-            Tower: Lucide.Building2,
+            Building2: Lucide.Building2,
             User: Lucide.User,
-            Bridge: Lucide.Waypoints,
-            Map: Lucide.Map,
-            Trophy: Lucide.Trophy,
-            Volume2: Lucide.Volume2
+            Waypoints: Lucide.Waypoints,
+            Globe: Lucide.Globe,
+            Trophy: Lucide.Trophy
         };
 
-        // 工具函數
-        function cn(...inputs) { return twMerge(clsx(inputs)); }
-
-        const playSound = (type) => {
-            const ctx = new (window.AudioContext || window.webkitAudioContext)();
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.connect(gain); gain.connect(ctx.destination);
-            const now = ctx.currentTime;
-            if (type === 'success') {
-                osc.frequency.setValueAtTime(440, now);
-                osc.frequency.exponentialRampToValueAtTime(880, now + 0.2);
-            } else if (type === 'pop') {
-                osc.frequency.setValueAtTime(150, now);
-                osc.frequency.exponentialRampToValueAtTime(300, now + 0.1);
-            }
-            osc.start(); osc.stop(now + 0.2);
-        };
-
-        // --- 主程式 App ---
         function App() {
-            const [gameState, setGameState] = useState('start'); // start, exploring, landmark
-            const [selectedLandmark, setSelectedLandmark] = useState(null);
-            const [foundCount, setFoundCount] = useState(0);
+            const [gameState, setGameState] = useState('start');
+            const [selected, setSelected] = useState(null);
 
-            const handleExplore = (landmark) => {
-                playSound('pop');
-                setSelectedLandmark(landmark);
-                setGameState('landmark');
-            };
-
-            const handleBack = () => {
-                if (!LANDMARKS.find(l => l.id === selectedLandmark.id).found) {
-                    setFoundCount(prev => prev + 1);
-                }
-                setGameState('exploring');
-                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+            const playSound = () => {
+                const ctx = new AudioContext();
+                const osc = ctx.createOscillator();
+                osc.connect(ctx.destination);
+                osc.start(); osc.stop(ctx.currentTime + 0.1);
             };
 
             return (
-                <div className="min-h-screen flex flex-col items-center justify-center p-4">
+                <div className="min-h-screen flex items-center justify-center p-4">
                     <AnimatePresence mode="wait">
-                        {/* 開始畫面 */}
                         {gameState === 'start' && (
-                            <motion.div key="start" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-center">
-                                <Lucide.Globe className="w-24 h-24 mx-auto text-orange-500 mb-6 animate-float" />
-                                <h1 className="text-5xl font-black text-stone-800 mb-4">中國奇觀探索之旅</h1>
-                                <p className="text-xl text-stone-600 mb-8">互動式地理教育學習系統</p>
-                                <button onClick={() => { playSound('success'); setGameState('exploring'); }} className="bg-orange-500 hover:bg-orange-600 text-white text-2xl font-bold py-4 px-12 rounded-full shadow-xl transition-all hover:scale-105">
-                                    開始探索
+                            <motion.div key="1" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-center">
+                                <Lucide.Globe className="w-20 h-20 mx-auto text-orange-500 mb-6 animate-float" />
+                                <h1 className="text-5xl font-black text-stone-800 mb-4">中國奇觀探索</h1>
+                                <button onClick={() => setGameState('map')} className="bg-orange-500 text-white px-10 py-4 rounded-full text-xl font-bold shadow-lg hover:scale-105 transition-transform">
+                                    立即開始
                                 </button>
                             </motion.div>
                         )}
 
-                        {/* 地圖探索畫面 */}
-                        {gameState === 'exploring' && (
-                            <motion.div key="map" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="w-full max-w-5xl">
-                                <div className="flex justify-between items-center mb-6">
-                                    <h2 className="text-3xl font-bold text-stone-800">點擊圖標探索發現 ({foundCount}/{LANDMARKS.length})</h2>
-                                    <div className="bg-white px-4 py-2 rounded-full shadow text-orange-600 font-bold italic">
-                                        探索進度: {Math.round((foundCount/LANDMARKS.length)*100)}%
-                                    </div>
-                                </div>
-                                
-                                <div className="relative aspect-video bg-white rounded-3xl shadow-2xl overflow-hidden border-8 border-white map-bg">
-                                    {LANDMARKS.map((l) => {
+                        {gameState === 'map' && (
+                            <motion.div key="2" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="w-full max-w-5xl">
+                                <div className="relative aspect-video bg-white rounded-3xl shadow-2xl map-bg border-8 border-white overflow-hidden">
+                                    {LANDMARKS.map(l => {
                                         const Icon = IconMap[l.icon] || Lucide.MapPin;
                                         return (
-                                            <motion.button
+                                            <button 
                                                 key={l.id}
-                                                whileHover={{ scale: 1.2 }}
-                                                onClick={() => handleExplore(l)}
-                                                className={cn("absolute z-10 p-3 rounded-full text-white shadow-lg", l.color)}
                                                 style={{ left: `${l.x}%`, top: `${l.y}%` }}
+                                                className={`absolute p-3 rounded-full text-white shadow-xl ${l.color} hover:scale-125 transition-transform`}
+                                                onClick={() => { setSelected(l); setGameState('detail'); confetti(); }}
                                             >
-                                                <Icon className="w-6 h-6" />
-                                            </motion.button>
+                                                <Icon size={24} />
+                                            </button>
                                         );
                                     })}
                                 </div>
                             </motion.div>
                         )}
 
-                        {/* 地標詳細內容 */}
-                        {gameState === 'landmark' && selectedLandmark && (
-                            <motion.div key="detail" initial={{ opacity: 0, x: 100 }} animate={{ opacity: 1, x: 0 }} className="max-w-4xl w-full bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row">
-                                <div className="md:w-1/2 h-64 md:h-auto overflow-hidden">
-                                    <img src={selectedLandmark.image} className="w-full h-full object-cover" alt={selectedLandmark.name} />
-                                </div>
-                                <div className="md:w-1/2 p-8">
-                                    <div className={cn("inline-block px-4 py-1 rounded-full text-white text-sm font-bold mb-4", selectedLandmark.color)}>
-                                        {selectedLandmark.type === 'Man-made' ? '人造奇觀' : '自然奇觀'}
+                        {gameState === 'detail' && selected && (
+                            <motion.div key="3" initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="bg-white rounded-3xl shadow-2xl max-w-4xl overflow-hidden flex flex-col md:flex-row">
+                                <img src={selected.image} className="md:w-1/2 h-64 md:h-auto object-cover" />
+                                <div className="p-8 md:w-1/2">
+                                    <h2 className="text-4xl font-black mb-2">{selected.name}</h2>
+                                    <p className="text-2xl font-bold text-orange-500 mb-4">{selected.measurement}</p>
+                                    <p className="text-stone-600 mb-6 bg-stone-100 p-4 rounded-xl border-l-4 border-orange-400 italic">"{selected.typeHint}"</p>
+                                    <div className="flex items-center gap-2 mb-8 text-stone-800 font-bold">
+                                        <Lucide.Trophy className="text-yellow-500" /> {selected.prideFact}
                                     </div>
-                                    <h2 className="text-4xl font-black text-stone-800 mb-4">{selectedLandmark.name}</h2>
-                                    <p className="text-2xl font-bold text-orange-500 mb-6">{selectedLandmark.measurement}</p>
-                                    
-                                    <div className="space-y-4 mb-8">
-                                        <div className="bg-stone-50 p-4 rounded-xl border-l-4 border-stone-300 italic text-stone-600">
-                                            "{selectedLandmark.typeHint}"
-                                        </div>
-                                        <div className="flex items-start gap-3">
-                                            <Lucide.Trophy className="w-6 h-6 text-yellow-500 mt-1" />
-                                            <p className="text-stone-700 font-semibold">{selectedLandmark.prideFact}</p>
-                                        </div>
-                                    </div>
-
-                                    <button onClick={handleBack} className="w-full bg-stone-800 text-white py-4 rounded-2xl font-bold text-xl hover:bg-stone-900 transition-colors">
-                                        返回地圖
-                                    </button>
+                                    <button onClick={() => setGameState('map')} className="w-full bg-stone-800 text-white py-4 rounded-2xl font-bold">返回地圖</button>
                                 </div>
                             </motion.div>
                         )}
@@ -254,8 +197,7 @@
             );
         }
 
-        const root = createRoot(document.getElementById('root'));
-        root.render(<App />);
+        createRoot(document.getElementById('root')).render(<App />);
     </script>
 </body>
 </html>
