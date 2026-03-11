@@ -1,13 +1,60 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My Google AI Studio App</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
-</html>
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>React Google Sites App</title>
+    
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
+    <style>
+        /* 您原本 index.css 的內容可以寫在這裡 */
+        body {
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f0f2f5;
+        }
+        .app-container {
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        // 這是您的 App 元件內容
+        function App() {
+            return (
+                <div className="app-container">
+                    <h1>你好！這是在 Google Sites 運行的 React</h1>
+                    <p>這是一個單一檔案測試版本。</p>
+                    <button onClick={() => alert('按鈕運作正常！')}>
+                        點擊測試
+                    </button>
+                </div>
+            );
+        }
+
+        // 對應您原本 main.tsx 的渲染邏輯
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(
+            <React.StrictMode>
+                <App />
+            </React.StrictMode>
+        );
+    </script>
+</body>
+</html>
