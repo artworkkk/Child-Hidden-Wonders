@@ -10,8 +10,6 @@ import {
   Waves, 
   Mountain, 
   Building2, 
-  Flower2, 
-  Landmark as BridgeIcon,
   Map as MapIcon,
   Trophy,
   CheckCircle2,
@@ -77,12 +75,83 @@ const playSound = (type: 'success' | 'error' | 'click' | 'pop') => {
   }
 };
 
+const PearlTowerIcon = ({ className }: { className?: string }) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
+    <path d="M12 2v20" />
+    <circle cx="12" cy="15" r="3" />
+    <circle cx="12" cy="8" r="2" />
+    <path d="M9 22h6" />
+  </svg>
+);
+
+const BridgeIcon = ({ className }: { className?: string }) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
+    {/* Water line */}
+    <path d="M2 20c2-1 4-1 6 0s4 1 6 0 4-1 6 0" />
+    {/* Bridge deck */}
+    <path d="M2 14h20" />
+    {/* Pylons (Above) */}
+    <path d="M8 14v-6" />
+    <path d="M16 14v-6" />
+    {/* Cables */}
+    <path d="M8 8l-4 6" />
+    <path d="M8 8l4 6" />
+    <path d="M16 8l-4 6" />
+    <path d="M16 8l4 6" />
+    {/* Supports (Under) */}
+    <path d="M8 14v6" />
+    <path d="M16 14v6" />
+    <path d="M4 14v5" />
+    <path d="M12 14v6" />
+    <path d="M20 14v5" />
+  </svg>
+);
+
+const StatueIcon = ({ className }: { className?: string }) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+  >
+    {/* Head with a topknot/halo feel */}
+    <circle cx="12" cy="7" r="3" />
+    {/* Seated Body/Shoulders */}
+    <path d="M7 11c0-1 1-2 5-2s5 1 5 2v4" />
+    {/* Seated Legs/Base (Wide) */}
+    <path d="M5 20c0-3 2-5 7-5s7 2 7 5" />
+    {/* Hands in lap/meditation pose */}
+    <path d="M10 16h4" />
+    {/* Base/Cliff edge */}
+    <path d="M4 22h16" />
+  </svg>
+);
+
 const IconMap: Record<string, React.ReactNode> = {
   Castle: <Castle className="w-6 h-6" />,
   Waves: <Waves className="w-6 h-6" />,
   Mountain: <Mountain className="w-6 h-6" />,
-  Building2: <Building2 className="w-6 h-6" />,
-  Flower2: <Flower2 className="w-6 h-6" />,
+  Tower: <PearlTowerIcon className="w-6 h-6" />,
+  Statue: <StatueIcon className="w-6 h-6" />,
   Bridge: <BridgeIcon className="w-6 h-6" />,
 };
 
@@ -227,12 +296,23 @@ export default function App() {
             exit={{ opacity: 0, scale: 1.1 }}
             className="flex flex-col items-center justify-center min-h-screen p-6 text-center z-10 relative"
           >
-            <div className="bg-white p-12 rounded-[3rem] shadow-2xl border-8 border-orange-100 max-w-2xl relative overflow-hidden">
+            <div className="bg-white p-12 rounded-[3rem] shadow-2xl border-8 border-orange-100 max-w-3xl relative overflow-hidden">
               <div className="absolute -top-10 -right-10 w-40 h-40 bg-orange-50 rounded-full opacity-50" />
               
-              <h1 className="text-5xl font-black mb-6 text-orange-600 tracking-tight">
-                China's Hidden Wonders
-              </h1>
+              <div className="flex items-center justify-center gap-6 mb-6">
+                <h1 className="text-5xl font-black text-orange-600 tracking-tight">
+                  China's Hidden Wonders
+                </h1>
+                <motion.img 
+                  initial={{ rotate: -10, scale: 0.9 }}
+                  animate={{ rotate: 5, scale: 1 }}
+                  transition={{ repeat: Infinity, repeatType: "reverse", duration: 2 }}
+                  src="https://img.freepik.com/premium-vector/boy-girl-are-sitting-their-suitcases_1022901-118696.jpg?semt=ais_rp_progressive&w=740&q=80"
+                  alt="Cute Explorer"
+                  className="w-40 h-40 rounded-3xl border-4 border-orange-200 shadow-xl object-cover"
+                  referrerPolicy="no-referrer"
+                />
+              </div>
               <p className="text-2xl mb-10 text-stone-600 leading-relaxed">
                 Welcome, Explorer! 🌏<br />
                 I have hidden <span className="underline decoration-orange-300 decoration-4 underline-offset-4 font-bold text-orange-600 bg-orange-50 px-1 rounded-md">6 wonders</span> on the map of <span className="underline decoration-orange-300 decoration-4 underline-offset-4 font-bold text-orange-600 bg-orange-50 px-1 rounded-md">China</span>.<br />
@@ -264,7 +344,7 @@ export default function App() {
               </div>
               <div className="relative bg-white/50 rounded-2xl border border-stone-200 overflow-hidden p-3 shadow-inner flex gap-3 items-center">
                 <img 
-                  src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/China_administrative_map.png/1200px-China_administrative_map.png"
+                  src="https://chinamap360.com/img/0/blank-map-of-china.jpg"
                   className="absolute inset-0 w-full h-full object-cover opacity-10 grayscale pointer-events-none"
                   alt=""
                   referrerPolicy="no-referrer"
@@ -295,7 +375,7 @@ export default function App() {
                   referrerPolicy="no-referrer"
                   onError={(e) => {
                     // Fallback to a high-quality administrative map if the first one fails
-                    (e.target as HTMLImageElement).src = "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/China_administrative_map.png/1200px-China_administrative_map.png";
+                    (e.target as HTMLImageElement).src = "https://worldmapwithcountries.net/wp-content/uploads/2020/03/Outline-Map.jpg";
                   }}
                 />
               </div>
@@ -315,7 +395,7 @@ export default function App() {
                   whileHover={foundLandmarks.includes(landmark.id) ? {} : { y: -5 }}
                 >
                   <img 
-                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/China_administrative_map.png/1200px-China_administrative_map.png"
+                    src="https://chinamap360.com/img/0/blank-map-of-china.jpg"
                     className="absolute inset-0 w-full h-full object-cover opacity-10 grayscale pointer-events-none"
                     alt=""
                     referrerPolicy="no-referrer"
@@ -338,10 +418,6 @@ export default function App() {
                 </motion.button>
               ))}
 
-              {/* Ocean/River Decorations */}
-              <div className="absolute bottom-10 left-10 text-blue-300 animate-pulse">
-                <Waves className="w-12 h-12" />
-              </div>
             </main>
 
             {/* Interaction Modal */}
@@ -405,9 +481,12 @@ export default function App() {
                         {/* Mini Location Map in Modal */}
                         <div className="mb-8 flex items-center gap-4 bg-white/80 backdrop-blur-sm p-4 rounded-3xl border border-stone-100 shadow-sm">
                           <div className="w-24 h-16 bg-stone-50 rounded-xl border border-stone-200 relative overflow-hidden flex-shrink-0">
-                            <svg viewBox="0 0 100 70" className="w-full h-full opacity-20 fill-stone-400">
-                              <path d="M10,30 L20,20 L35,15 L45,25 L42,35 L30,38 L15,35 Z M10,30 L15,35 L30,38 L42,35 L45,45 L40,55 L25,58 L15,53 Z M35,15 L50,12 L65,13 L75,15 L80,18 L78,25 L65,30 L50,28 L40,18 Z M75,15 L85,8 L93,10 L96,20 L94,28 L85,32 L78,25 Z M40,55 L45,62 L55,65 L70,68 L80,65 L82,58 L75,55 L60,60 L55,50 L45,45 Z M45,25 L65,30 L78,25 L85,32 L88,45 L82,58 L75,55 L60,60 L55,50 L45,45 L42,35 Z" />
-                            </svg>
+                            <img 
+                              src="https://chinamap360.com/img/0/blank-map-of-china.jpg"
+                              className="w-full h-full object-cover opacity-30 grayscale"
+                              alt="China Map"
+                              referrerPolicy="no-referrer"
+                            />
                             <motion.div 
                               initial={{ scale: 0 }}
                               animate={{ scale: 1 }}
@@ -529,24 +608,12 @@ export default function App() {
                               Measurement: {activeLandmark.measurement}
                             </div>
                           </div>
-                          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                          <div className="flex justify-center">
                             <button
                               onClick={closeInteraction}
                               className="bg-stone-800 hover:bg-stone-900 text-white py-4 px-10 rounded-full text-xl font-bold transition-all flex items-center justify-center gap-2"
                             >
                               Back to Map <ArrowRight className="w-6 h-6" />
-                            </button>
-                            <button
-                              onClick={() => {
-                                playSound('pop');
-                                setGameState('start');
-                                setActiveLandmark(null);
-                                setCurrentStep('map');
-                                setQuestionInput('');
-                              }}
-                              className="bg-orange-100 hover:bg-orange-200 text-orange-700 py-4 px-10 rounded-full text-xl font-bold transition-all flex items-center justify-center gap-2 border-2 border-orange-200"
-                            >
-                              Return to Start
                             </button>
                           </div>
                         </motion.div>
@@ -702,9 +769,12 @@ export default function App() {
                     </p>
 
                     <div className="relative w-full h-48 bg-stone-50 rounded-3xl border-2 border-stone-100 mb-12 overflow-hidden p-4">
-                      <svg viewBox="0 0 100 70" className="w-full h-full opacity-10 fill-stone-900 absolute inset-0">
-                        <path d="M10,30 L20,20 L35,15 L45,25 L42,35 L30,38 L15,35 Z M10,30 L15,35 L30,38 L42,35 L45,45 L40,55 L25,58 L15,53 Z M35,15 L50,12 L65,13 L75,15 L80,18 L78,25 L65,30 L50,28 L40,18 Z M75,15 L85,8 L93,10 L96,20 L94,28 L85,32 L78,25 Z M40,55 L45,62 L55,65 L70,68 L80,65 L82,58 L75,55 L60,60 L55,50 L45,45 Z M45,25 L65,30 L78,25 L85,32 L88,45 L82,58 L75,55 L60,60 L55,50 L45,45 L42,35 Z" />
-                      </svg>
+                      <img 
+                        src="https://chinamap360.com/img/0/blank-map-of-china.jpg"
+                        className="w-full h-full object-cover opacity-20 grayscale absolute inset-0"
+                        alt="China Map"
+                        referrerPolicy="no-referrer"
+                      />
                       {LANDMARKS.map(l => (
                         <motion.div
                           key={l.id}

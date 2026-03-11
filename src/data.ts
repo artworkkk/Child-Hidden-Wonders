@@ -43,7 +43,7 @@ export const LANDMARKS: Landmark[] = [
     color: 'bg-blue-400',
     x: 65,
     y: 50,
-    image: 'https://images.unsplash.com/photo-1547984602-40d66792f59d?auto=format&fit=crop&w=1200&q=80'
+    image: 'https://www.globaltimes.cn/Portals/0/attachment/2022/2022-06-12/776dda6e-42ec-4d8c-94f8-319f8563054a.jpeg'
   },
   {
     id: 'mount-everest',
@@ -57,21 +57,21 @@ export const LANDMARKS: Landmark[] = [
     color: 'bg-slate-400',
     x: 25,
     y: 65,
-    image: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1200&q=80'
+    image: 'https://explorerspassage.com/wp-content/uploads/2016/08/Mount_Everest_as_seen_from_Drukair2_PLW_edit-1-1.jpg'
   },
   {
     id: 'oriental-pearl-tower',
-    name: 'Oriental Pearl Radio & Television Tower',
+    name: 'Oriental Pearl Tower',
     type: 'Man-made',
     measurement: '468 m high',
     questionType: 'height',
     prideFact: 'A world-famous TV tower in Shanghai',
     typeHint: 'Architects and engineers designed this tall building and workers built it with steel and glass.',
-    icon: 'Building2',
+    icon: 'Tower',
     color: 'bg-indigo-400',
-    x: 88,
+    x: 80,
     y: 50,
-    image: 'https://images.unsplash.com/photo-1477586957327-847a0f3f4fe3?auto=format&fit=crop&w=1200&q=80'
+    image: 'https://www.visitourchina.com/FileUpload/newpicture/cities/shanghai/dongfangmingzhu1.jpg'
   },
   {
     id: 'leshan-buddha',
@@ -81,11 +81,11 @@ export const LANDMARKS: Landmark[] = [
     questionType: 'height',
     prideFact: 'A marvel of ancient art',
     typeHint: 'Ancient craftsmen carved this huge statue directly into a stone cliff over 1,000 years ago.',
-    icon: 'Flower2',
+    icon: 'Statue',
     color: 'bg-emerald-400',
     x: 55,
-    y: 55,
-    image: 'https://images.unsplash.com/photo-1590424768404-3286f9037267?auto=format&fit=crop&w=1200&q=80'
+    y: 35,
+    image: 'https://chinaexplorertour.com/wp-content/uploads/2025/12/e3ae1b1e2b89450696f8d35a879b369e.jpg'
   },
   {
     id: 'hzm-bridge',
@@ -99,6 +99,6 @@ export const LANDMARKS: Landmark[] = [
     color: 'bg-cyan-400',
     x: 78,
     y: 80,
-    image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=1200&q=80'
+    image: 'https://res.klook.com/image/upload/c_crop,h_1563,w_2500,x_0,y_16,z_0.3/w_1265,h_791,c_fill,q_85/w_80,x_15,y_15,g_south_west,l_Klook_water_br_trans_yhcmh3/activities/hmxvrbnva7hatco8dmhl.webp'
   }
 ];
