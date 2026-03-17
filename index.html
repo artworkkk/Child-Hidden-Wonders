@@ -13,6 +13,7 @@
             --dark: #2C3E50;
             --light: #F7FFF7;
             --success: #27ae60;
+            --disabled: #bdc3c7;
             --bg-gradient: linear-gradient(135deg, #a8e6cf 0%, #dcedc1 100%);
         }
 
@@ -132,16 +133,10 @@
             border: 4px solid var(--secondary);
         }
 
-        .teacher-msg {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #555;
-        }
-
         .map-card {
             background: white;
             border-radius: 20px;
-            padding: 15px;
+            padding: 20px;
             width: 100%;
             box-shadow: 0 10px 20px rgba(0,0,0,0.15);
             border: 4px solid var(--dark);
@@ -151,18 +146,66 @@
         .map-title {
             text-align: center;
             color: var(--dark);
-            margin: 5px 0 15px 0;
+            margin: 0 0 15px 0;
             font-size: 1.6rem;
             text-transform: uppercase;
+        }
+
+        /* ===== 新增：進度選單 (Mission Menu) ===== */
+        .mission-menu {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .menu-item {
+            background: var(--light);
+            border: 2px solid var(--secondary);
+            border-radius: 12px;
+            padding: 8px 10px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .menu-item:hover {
+            background: #e0f7fa;
+            transform: translateY(-2px);
+        }
+
+        /* 答對後的選單狀態 (灰色 + Disabled) */
+        .menu-item.completed {
+            background: #ecf0f1;
+            border-color: var(--disabled);
+            color: #7f8c8d;
+            cursor: not-allowed;
+            pointer-events: none; /* 讓按鈕無法再點擊 */
+            transform: none;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .menu-item .tick {
+            display: none;
+            font-size: 1.1rem;
+        }
+
+        .menu-item.completed .tick {
+            display: block;
+            color: var(--success);
         }
 
         /* ===== 真實中國地圖背景 ===== */
         .map-wrapper {
             position: relative;
             width: 100%;
-            padding-top: 73%; /* 對齊地圖比例 */
+            padding-top: 73%;
             background-color: #f1f2f6;
-            /* 使用極其穩定且高清的 SVG 向量地圖，保證不破圖 */
             background-image: url('https://upload.wikimedia.org/wikipedia/commons/d/d4/China_edcp_location_map.svg');
             background-size: cover;
             background-position: center;
@@ -171,47 +214,72 @@
             overflow: hidden;
         }
 
-        .pin {
+        /* ===== 新增：專屬地標圖標 (Custom Pins) ===== */
+        .custom-pin {
             position: absolute;
-            width: 36px;
-            height: 36px;
-            background-color: var(--primary);
-            border-radius: 50% 50% 50% 0;
-            transform: rotate(-45deg);
+            transform: translate(-50%, -50%);
             cursor: pointer;
-            box-shadow: -4px 4px 6px rgba(0,0,0,0.4);
+            z-index: 2;
             transition: all 0.3s;
             animation: bounce 2s infinite;
         }
 
-        .pin::after {
-            content: '';
-            width: 12px;
-            height: 12px;
-            background: white;
-            position: absolute;
-            border-radius: 50%;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-        .pin:hover {
-            transform: rotate(-45deg) scale(1.3);
-            background-color: var(--accent);
+        .custom-pin:hover {
+            transform: translate(-50%, -50%) scale(1.2);
             z-index: 5;
         }
 
-        .pin.completed {
-            background-color: var(--success);
+        .pin-bg {
+            background: white;
+            border: 3px solid var(--primary);
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.6rem;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            transition: all 0.3s;
+        }
+
+        .pin-tick {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        /* 答對後的地圖圖標狀態 */
+        .custom-pin.completed {
             animation: none;
-            cursor: default;
+            cursor: not-allowed;
+            pointer-events: none; /* 無法再點擊 */
+        }
+
+        .custom-pin.completed .pin-bg {
+            background: #ecf0f1;
+            border-color: var(--disabled);
+            filter: grayscale(100%);
+            opacity: 0.7;
+        }
+
+        .custom-pin.completed .pin-tick {
+            display: flex;
         }
 
         @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateY(0) rotate(-45deg); }
-            40% { transform: translateY(-12px) rotate(-45deg); }
-            60% { transform: translateY(-6px) rotate(-45deg); }
+            0%, 20%, 50%, 80%, 100% { transform: translate(-50%, -50%); }
+            40% { transform: translate(-50%, -65%); }
+            60% { transform: translate(-50%, -58%); }
         }
 
         /* ----- 底部控制列 ----- */
@@ -243,7 +311,6 @@
             width: 90%;
             max-width: 450px;
             height: 220px;
-            /* object-fit: cover 保證圖片按比例填滿不會變形 */
             object-fit: cover; 
             border-radius: 15px;
             border: 5px solid var(--accent);
@@ -348,17 +415,20 @@
         <header>
             <h1 style="color: var(--primary); margin: 0 0 10px 0;">China's Wonders Explorer</h1>
             <div class="teacher-msg" id="teacherMsg">
-                "Welcome, Explorer! 🗺️ I have hidden 6 wonders on the Map of China. Tell me which one you want to find first!"
+                "Welcome, Explorer! 🗺️ Check the menu below and find them all!"
             </div>
         </header>
 
         <div class="map-card">
-            <h3 class="map-title">📍 Map of China</h3>
+            <h3 class="map-title">📍 Mission Menu</h3>
+            
+            <!-- 進度選單 (JavaScript 會自動填入) -->
+            <div class="mission-menu" id="missionMenu"></div>
             
             <div class="map-wrapper" id="mapWrapper">
-                <!-- 6個地標圖釘將自動載入到全彩地形圖上 -->
+                <!-- 自訂地標圖標將自動載入到這裡 -->
                 
-                <!-- 任務互動彈出視窗 (覆蓋在地圖上方) -->
+                <!-- 任務互動彈出視窗 -->
                 <div class="modal" id="interactionModal">
                     <h2 id="lmTitle" style="color: var(--dark); margin: 0 0 5px 0;">Landmark Name</h2>
                     
@@ -367,7 +437,7 @@
                     
                     <!-- 步驟 1: 自然還是人造 -->
                     <div class="question-box" id="step1">
-                        <p style="font-size: 1.1rem; margin-top:5px;">Is this landmark <strong>Man-made</strong> (built by people) or <strong>Natural</strong> (made by nature)?</p>
+                        <p style="font-size: 1.1rem; margin-top:5px;">Is this landmark <strong>Man-made</strong> or <strong>Natural</strong>?</p>
                         <button class="btn manmade" onclick="checkType('man-made')">Man-made 🏗️</button>
                         <button class="btn natural" onclick="checkType('natural')">Natural 🏔️</button>
                         <div class="error-msg" id="typeError"></div>
@@ -390,7 +460,6 @@
                         </div>
                     </div>
 
-                    <!-- Modal 內部專屬退出/返回按鈕 -->
                     <div class="modal-footer">
                         <button class="btn btn-back" onclick="closeModal()">⬅️ Back to Map</button>
                     </div>
@@ -398,7 +467,6 @@
             </div>
         </div>
 
-        <!-- Map 頁面底部退出/返回首頁按鈕 -->
         <div class="bottom-bar">
             <button class="btn btn-back" onclick="goToHome()">🏠 Exit / Back to Home</button>
         </div>
@@ -417,72 +485,72 @@
 
     <!-- ================= JavaScript 邏輯 ================= -->
     <script>
-        // 資料庫：全部換成「維基共享資源」最穩定的直連原圖網址
+        // 資料庫：加入了 emoji (專屬圖標)，並使用最強大的 Wiki Special:FilePath 直連圖片 (保證不破圖)
         const landmarks =[
             {
                 id: 'great-wall',
-                name: 'The Great Wall',
+                name: 'Great Wall',
+                emoji: '🧱', // 長城用城牆磚塊
                 type: 'man-made',
                 measureType: 'length',
                 answer: 'It is 21,196 km long!',
                 fact: 'It is a mighty symbol of unity and history. It was built to protect ancient China.',
-                // 長城穩定原圖
-                img: 'https://upload.wikimedia.org/wikipedia/commons/2/23/The_Great_Wall_of_China_at_Jinshanling-edit.jpg',
+                img: 'https://commons.wikimedia.org/wiki/Special:FilePath/The_Great_Wall_of_China_at_Jinshanling-edit.jpg?width=800',
                 top: '35%', left: '72%' 
             },
             {
                 id: 'yangtze-river',
-                name: 'The Yangtze River',
+                name: 'Yangtze River',
+                emoji: '🌊', // 長江用波浪
                 type: 'natural',
                 measureType: 'length',
                 answer: 'It is 6,300 km long!',
                 fact: 'It is known as the "Mother River" of China, nurturing Chinese civilization for thousands of years.',
-                // 長江瞿塘峽穩定原圖
-                img: 'https://upload.wikimedia.org/wikipedia/commons/9/98/Qutang_Gorge.jpg',
+                img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Qutang_Gorge.jpg?width=800',
                 top: '58%', left: '65%'
             },
             {
                 id: 'everest',
-                name: 'Mount Everest (Qomolangma)',
+                name: 'Mt. Everest',
+                emoji: '🏔️', // 雪山
                 type: 'natural',
                 measureType: 'height',
                 answer: 'It is 8,848.86 m high!',
                 fact: 'It is the highest peak in the entire world, situated on the border of China and Nepal.',
-                // 從中國西藏側拍攝的珠峰北坡穩定原圖
-                img: 'https://upload.wikimedia.org/wikipedia/commons/e/e7/Everest_North_Face_toward_Base_Camp_Tibet_Luca_Galuzzi_2006.jpg',
+                img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Everest_kalapatthar.jpg?width=800',
                 top: '65%', left: '18%'
             },
             {
                 id: 'shanghai-tower',
-                name: 'The Shanghai Tower',
+                name: 'Shanghai Tower',
+                emoji: '🏙️', // 高樓大廈
                 type: 'man-made',
                 measureType: 'height',
                 answer: 'It is 632 m high!',
                 fact: 'It is a brilliant symbol of modern China and features smart, green engineering.',
-                // 上海中心大廈穩定原圖
-                img: 'https://upload.wikimedia.org/wikipedia/commons/a/a0/Shanghai_Tower_2015.jpg',
+                img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Shanghai_Tower_2015.jpg?width=800',
                 top: '55%', left: '85%'
             },
             {
                 id: 'leshan-buddha',
-                name: 'The Leshan Giant Buddha',
+                name: 'Leshan Buddha',
+                emoji: '🗿', // 石像大佛
                 type: 'man-made',
                 measureType: 'height',
                 answer: 'It is 71 m high!',
                 fact: 'It is a breathtaking marvel of ancient art, carved entirely out of a cliff over 1,000 years ago.',
-                // 樂山大佛穩定原圖
-                img: 'https://upload.wikimedia.org/wikipedia/commons/6/6b/Leshan_Giant_Buddha_-_01.jpg',
+                img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Leshan_Giant_Buddha_-_01.jpg?width=800',
                 top: '62%', left: '50%'
             },
             {
                 id: 'hzmb-bridge',
-                name: 'The Hong Kong-Zhuhai-Macao Bridge',
+                name: 'HKZMB Bridge',
+                emoji: '🌉', // 跨海大橋
                 type: 'man-made',
                 measureType: 'length',
                 answer: 'It is 55 km long!',
                 fact: 'It is the world\'s longest sea-crossing bridge, showcasing China\'s amazing modern engineering!',
-                // 港珠澳大橋穩定原圖
-                img: 'https://upload.wikimedia.org/wikipedia/commons/8/87/Hong_Kong-Zhuhai-Macau_Bridge.jpg',
+                img: 'https://commons.wikimedia.org/wiki/Special:FilePath/Hong_Kong-Zhuhai-Macau_Bridge.jpg?width=800',
                 top: '82%', left: '72%'
             }
         ];
@@ -490,44 +558,50 @@
         let currentLandmark = null;
         let completedCount = 0;
 
-        // 頁面切換功能
         function goToMap() {
             document.getElementById('homePage').classList.remove('active');
             document.getElementById('mapPage').classList.add('active');
         }
 
         function goToHome() {
-            // 如果老師/學生想隨時退出，返回首頁
             document.getElementById('mapPage').classList.remove('active');
             document.getElementById('homePage').classList.add('active');
         }
 
-        // 初始化地圖標記 (Pins)
+        // 初始化：同時生成「進度選單」和「地圖自訂圖標」
+        const menuWrapper = document.getElementById('missionMenu');
         const mapWrapper = document.getElementById('mapWrapper');
+
         landmarks.forEach(lm => {
+            // 1. 生成上方選單按鈕
+            const menuItem = document.createElement('div');
+            menuItem.className = 'menu-item';
+            menuItem.id = `menu-${lm.id}`;
+            menuItem.innerHTML = `<span>${lm.emoji} ${lm.name}</span> <span class="tick">✅</span>`;
+            menuItem.onclick = () => openModal(lm);
+            menuWrapper.appendChild(menuItem);
+
+            // 2. 生成地圖上的專屬圖標
             const pin = document.createElement('div');
-            pin.className = 'pin';
+            pin.className = 'custom-pin';
             pin.id = `pin-${lm.id}`;
             pin.style.top = lm.top;
             pin.style.left = lm.left;
             pin.title = lm.name;
+            pin.innerHTML = `
+                <div class="pin-bg">${lm.emoji}</div>
+                <div class="pin-tick">✅</div>
+            `;
             pin.onclick = () => openModal(lm);
             mapWrapper.appendChild(pin);
         });
 
-        // 打開任務視窗
         function openModal(landmark) {
-            // 如果已經完成，不再打開
-            const pin = document.getElementById(`pin-${landmark.id}`);
-            if(pin.classList.contains('completed')) return;
-
             currentLandmark = landmark;
             
-            // 設定圖片與標題
             document.getElementById('lmImage').src = landmark.img;
-            document.getElementById('lmTitle').innerText = landmark.name;
+            document.getElementById('lmTitle').innerText = `${landmark.emoji} ${landmark.name}`;
             
-            // 重置介面狀態
             document.getElementById('step1').classList.remove('hidden');
             document.getElementById('step2').classList.add('hidden');
             document.getElementById('step3').classList.add('hidden');
@@ -536,16 +610,13 @@
             document.getElementById('questionError').innerText = "";
             document.getElementById('questionInput').value = "";
             
-            // 顯示 Modal
             document.getElementById('interactionModal').style.display = 'flex';
         }
 
-        // 關閉任務視窗返回地圖
         function closeModal() {
             document.getElementById('interactionModal').style.display = 'none';
         }
 
-        // 檢查 Natural / Man-made
         function checkType(selectedType) {
             if(selectedType === currentLandmark.type) {
                 document.getElementById('step1').classList.add('hidden');
@@ -556,7 +627,6 @@
             }
         }
 
-        // 檢查英文問句
         function checkQuestion() {
             const inputField = document.getElementById('questionInput');
             let q = inputField.value.toLowerCase().trim();
@@ -567,7 +637,6 @@
                 return;
             }
 
-            // 英文語法與自然特徵配對邏輯
             if(currentLandmark.measureType === 'length') {
                 if(q.includes('how high') || q.includes('how tall')) {
                     errorBox.innerText = "For rivers, walls, or bridges, we ask 'How long'. Try again! 😉";
@@ -589,7 +658,6 @@
             }
         }
 
-        // 成功答對並顯示 Pride Fact
         function showSuccess() {
             document.getElementById('step2').classList.add('hidden');
             document.getElementById('step3').classList.remove('hidden');
@@ -597,16 +665,19 @@
             document.getElementById('answerText').innerText = currentLandmark.answer;
             document.getElementById('factText').innerText = currentLandmark.fact;
 
-            // 將地圖上的圖釘變成綠色已完成狀態
+            // --- 重點更新：標記為已完成 (Disable & Tick) ---
             const pin = document.getElementById(`pin-${currentLandmark.id}`);
-            pin.classList.add('completed');
-
-            completedCount++;
+            const menuItem = document.getElementById(`menu-${currentLandmark.id}`);
             
-            // 更新老師的話
-            document.getElementById('teacherMsg').innerText = `Great job! You have found ${completedCount} out of 6 wonders. Keep exploring!`;
+            // 加上 completed class，CSS 會自動處理灰色、顯示 ✅、並套用 pointer-events: none (無法再點擊)
+            if (!pin.classList.contains('completed')) {
+                pin.classList.add('completed');
+                menuItem.classList.add('completed');
+                completedCount++;
+            }
+            
+            document.getElementById('teacherMsg').innerText = `Great job! You have found ${completedCount} out of 6 wonders.`;
 
-            // 如果全部完成，顯示頒獎畫面
             if(completedCount === landmarks.length) {
                 setTimeout(() => {
                     document.getElementById('badgeModal').style.display = 'flex';
