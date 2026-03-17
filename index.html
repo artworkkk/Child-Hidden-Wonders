@@ -12,7 +12,7 @@
             --accent: #FFE66D;
             --dark: #2C3E50;
             --light: #F7FFF7;
-            --success: #95E1D3;
+            --success: #27ae60;
             --bg-gradient: linear-gradient(135deg, #a8e6cf 0%, #dcedc1 100%);
         }
 
@@ -32,7 +32,7 @@
             align-items: center;
         }
 
-        /* 頁面切換控制 */
+        /* ----- 頁面切換控制 ----- */
         .page {
             display: none;
             width: 100%;
@@ -53,7 +53,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* ----- 首頁 (Home Page) 樣式 ----- */
+        /* ----- 首頁 (Home Page) ----- */
         .home-container {
             background: white;
             border-radius: 30px;
@@ -67,7 +67,7 @@
 
         .home-title {
             color: var(--primary);
-            font-size: 3rem;
+            font-size: 2.8rem;
             margin-bottom: 10px;
             text-transform: uppercase;
             letter-spacing: 2px;
@@ -77,12 +77,12 @@
             font-size: 1.5rem;
             color: var(--secondary);
             font-weight: bold;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
 
         .hero-icon {
-            font-size: 6rem;
-            margin-bottom: 20px;
+            font-size: 5rem;
+            margin-bottom: 15px;
             animation: float 3s ease-in-out infinite;
         }
 
@@ -92,7 +92,7 @@
             100% { transform: translateY(0px); }
         }
 
-        /* 按鈕樣式 */
+        /* ----- 按鈕樣式 ----- */
         .btn {
             background: var(--secondary);
             color: white;
@@ -120,7 +120,7 @@
         .btn.manmade { background: #FF9F1C; }
         .btn.natural { background: #2EC4B6; }
 
-        /* ----- 地圖頁面 (Map Page) 樣式 ----- */
+        /* ----- 地圖頁面 (Map Page) ----- */
         header {
             text-align: center;
             background: white;
@@ -141,10 +141,10 @@
         .map-card {
             background: white;
             border-radius: 20px;
-            padding: 10px;
+            padding: 15px;
             width: 100%;
             box-shadow: 0 10px 20px rgba(0,0,0,0.15);
-            border: 4px solid white;
+            border: 4px solid var(--dark);
             position: relative;
         }
 
@@ -152,38 +152,42 @@
             text-align: center;
             color: var(--dark);
             margin: 5px 0 15px 0;
-            font-size: 1.5rem;
+            font-size: 1.6rem;
+            text-transform: uppercase;
         }
 
+        /* ===== 真實中國地圖背景 ===== */
         .map-wrapper {
             position: relative;
             width: 100%;
-            padding-top: 75%; /* 4:3 Aspect Ratio */
-            background-color: #e3f2fd;
-            background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/China_blank_map.svg/1024px-China_blank_map.svg.png');
+            padding-top: 73%; /* 對齊地圖比例 */
+            background-color: #f1f2f6;
+            /* 使用極其穩定且高清的 SVG 向量地圖，保證不破圖 */
+            background-image: url('https://upload.wikimedia.org/wikipedia/commons/d/d4/China_edcp_location_map.svg');
             background-size: cover;
             background-position: center;
             border-radius: 15px;
             border: 2px solid #b2bec3;
+            overflow: hidden;
         }
 
         .pin {
             position: absolute;
-            width: 40px;
-            height: 40px;
+            width: 36px;
+            height: 36px;
             background-color: var(--primary);
             border-radius: 50% 50% 50% 0;
             transform: rotate(-45deg);
             cursor: pointer;
-            box-shadow: -4px 4px 6px rgba(0,0,0,0.3);
+            box-shadow: -4px 4px 6px rgba(0,0,0,0.4);
             transition: all 0.3s;
             animation: bounce 2s infinite;
         }
 
         .pin::after {
             content: '';
-            width: 14px;
-            height: 14px;
+            width: 12px;
+            height: 12px;
             background: white;
             position: absolute;
             border-radius: 50%;
@@ -193,8 +197,9 @@
         }
 
         .pin:hover {
-            transform: rotate(-45deg) scale(1.2);
+            transform: rotate(-45deg) scale(1.3);
             background-color: var(--accent);
+            z-index: 5;
         }
 
         .pin.completed {
@@ -205,11 +210,11 @@
 
         @keyframes bounce {
             0%, 20%, 50%, 80%, 100% { transform: translateY(0) rotate(-45deg); }
-            40% { transform: translateY(-15px) rotate(-45deg); }
-            60% { transform: translateY(-7px) rotate(-45deg); }
+            40% { transform: translateY(-12px) rotate(-45deg); }
+            60% { transform: translateY(-6px) rotate(-45deg); }
         }
 
-        /* ----- 底部控制列 (Bottom Bar) ----- */
+        /* ----- 底部控制列 ----- */
         .bottom-bar {
             width: 100%;
             display: flex;
@@ -223,7 +228,7 @@
             display: none;
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255,255,255,0.95);
+            background: rgba(255,255,255,0.96);
             z-index: 10;
             padding: 20px;
             flex-direction: column;
@@ -236,9 +241,10 @@
 
         .landmark-img {
             width: 90%;
-            max-width: 400px;
-            height: 200px;
-            object-fit: cover;
+            max-width: 450px;
+            height: 220px;
+            /* object-fit: cover 保證圖片按比例填滿不會變形 */
+            object-fit: cover; 
             border-radius: 15px;
             border: 5px solid var(--accent);
             margin-top: 10px;
@@ -286,17 +292,17 @@
 
         .modal-footer {
             margin-top: auto;
-            padding-top: 15px;
-            padding-bottom: 15px;
+            padding-top: 10px;
+            padding-bottom: 10px;
             width: 100%;
         }
 
-        /* Badge Modal */
+        /* ----- 結業勳章 (Badge) ----- */
         .badge-modal {
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(0,0,0,0.8);
+            background: rgba(0,0,0,0.85);
             z-index: 100;
             justify-content: center;
             align-items: center;
@@ -350,16 +356,18 @@
             <h3 class="map-title">📍 Map of China</h3>
             
             <div class="map-wrapper" id="mapWrapper">
-                <!-- Pins 將會透過 JS 自動生成在這裡 -->
+                <!-- 6個地標圖釘將自動載入到全彩地形圖上 -->
                 
                 <!-- 任務互動彈出視窗 (覆蓋在地圖上方) -->
                 <div class="modal" id="interactionModal">
-                    <h2 id="lmTitle" style="color: var(--dark); margin-bottom: 5px;">Landmark Name</h2>
+                    <h2 id="lmTitle" style="color: var(--dark); margin: 0 0 5px 0;">Landmark Name</h2>
+                    
+                    <!-- 這裡會顯示高清圖片 -->
                     <img id="lmImage" class="landmark-img" src="" alt="Landmark">
                     
                     <!-- 步驟 1: 自然還是人造 -->
                     <div class="question-box" id="step1">
-                        <p style="font-size: 1.1rem;">Is this landmark <strong>Man-made</strong> (built by people) or <strong>Natural</strong> (made by nature)?</p>
+                        <p style="font-size: 1.1rem; margin-top:5px;">Is this landmark <strong>Man-made</strong> (built by people) or <strong>Natural</strong> (made by nature)?</p>
                         <button class="btn manmade" onclick="checkType('man-made')">Man-made 🏗️</button>
                         <button class="btn natural" onclick="checkType('natural')">Natural 🏔️</button>
                         <div class="error-msg" id="typeError"></div>
@@ -376,13 +384,13 @@
 
                     <!-- 步驟 3: 答案與價值觀教育 -->
                     <div class="question-box hidden" id="step3">
-                        <h3 style="color: #27ae60; font-size: 1.3rem;" id="answerText">Answer</h3>
+                        <h3 style="color: var(--success); font-size: 1.3rem; margin-top: 0;" id="answerText">Answer</h3>
                         <div class="pride-fact" id="prideFact">
                             🌟 <strong>Pride Fact:</strong> <br><span id="factText"></span>
                         </div>
                     </div>
 
-                    <!-- Modal 底部返回按鈕 -->
+                    <!-- Modal 內部專屬退出/返回按鈕 -->
                     <div class="modal-footer">
                         <button class="btn btn-back" onclick="closeModal()">⬅️ Back to Map</button>
                     </div>
@@ -409,7 +417,7 @@
 
     <!-- ================= JavaScript 邏輯 ================= -->
     <script>
-        // 資料庫：中國地標數據
+        // 資料庫：全部換成「維基共享資源」最穩定的直連原圖網址
         const landmarks =[
             {
                 id: 'great-wall',
@@ -418,8 +426,9 @@
                 measureType: 'length',
                 answer: 'It is 21,196 km long!',
                 fact: 'It is a mighty symbol of unity and history. It was built to protect ancient China.',
-                img: 'https://cdn.britannica.com/54/122154-050-4DA0F697/Great-Wall-of-China.jpg',
-                top: '32%', left: '72%'
+                // 長城穩定原圖
+                img: 'https://upload.wikimedia.org/wikipedia/commons/2/23/The_Great_Wall_of_China_at_Jinshanling-edit.jpg',
+                top: '35%', left: '72%' 
             },
             {
                 id: 'yangtze-river',
@@ -428,8 +437,9 @@
                 measureType: 'length',
                 answer: 'It is 6,300 km long!',
                 fact: 'It is known as the "Mother River" of China, nurturing Chinese civilization for thousands of years.',
-                img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Qutang_Gorge.jpg/800px-Qutang_Gorge.jpg',
-                top: '55%', left: '60%'
+                // 長江瞿塘峽穩定原圖
+                img: 'https://upload.wikimedia.org/wikipedia/commons/9/98/Qutang_Gorge.jpg',
+                top: '58%', left: '65%'
             },
             {
                 id: 'everest',
@@ -437,9 +447,10 @@
                 type: 'natural',
                 measureType: 'height',
                 answer: 'It is 8,848.86 m high!',
-                fact: 'It is the highest peak in the entire world, shared by China and Nepal.',
-                img: 'https://zh.wikipedia.org/wiki/%E7%8F%A0%E7%A9%86%E6%9C%97%E7%91%AA%E5%B3%B0#/media/File:Everest_North_Face_toward_Base_Camp_Tibet_Luca_Galuzzi_2006.jpg',
-                top: '65%', left: '25%'
+                fact: 'It is the highest peak in the entire world, situated on the border of China and Nepal.',
+                // 從中國西藏側拍攝的珠峰北坡穩定原圖
+                img: 'https://upload.wikimedia.org/wikipedia/commons/e/e7/Everest_North_Face_toward_Base_Camp_Tibet_Luca_Galuzzi_2006.jpg',
+                top: '65%', left: '18%'
             },
             {
                 id: 'shanghai-tower',
@@ -448,7 +459,8 @@
                 measureType: 'height',
                 answer: 'It is 632 m high!',
                 fact: 'It is a brilliant symbol of modern China and features smart, green engineering.',
-                img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Shanghai_Tower_2015.jpg/800px-Shanghai_Tower_2015.jpg',
+                // 上海中心大廈穩定原圖
+                img: 'https://upload.wikimedia.org/wikipedia/commons/a/a0/Shanghai_Tower_2015.jpg',
                 top: '55%', left: '85%'
             },
             {
@@ -458,7 +470,8 @@
                 measureType: 'height',
                 answer: 'It is 71 m high!',
                 fact: 'It is a breathtaking marvel of ancient art, carved entirely out of a cliff over 1,000 years ago.',
-                img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Leshan_Buddha_Statue_View.jpg/800px-Leshan_Buddha_Statue_View.jpg',
+                // 樂山大佛穩定原圖
+                img: 'https://upload.wikimedia.org/wikipedia/commons/6/6b/Leshan_Giant_Buddha_-_01.jpg',
                 top: '62%', left: '50%'
             },
             {
@@ -468,8 +481,9 @@
                 measureType: 'length',
                 answer: 'It is 55 km long!',
                 fact: 'It is the world\'s longest sea-crossing bridge, showcasing China\'s amazing modern engineering!',
-                img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Hong_Kong-Zhuhai-Macao_Bridge_2018.jpg/800px-Hong_Kong-Zhuhai-Macao_Bridge_2018.jpg',
-                top: '82%', left: '68%'
+                // 港珠澳大橋穩定原圖
+                img: 'https://upload.wikimedia.org/wikipedia/commons/8/87/Hong_Kong-Zhuhai-Macau_Bridge.jpg',
+                top: '82%', left: '72%'
             }
         ];
 
