@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 突破圖片防盜連的核心代碼，保證 GitHub Pages 圖片正常顯示 -->
+    <meta name="referrer" content="no-referrer">
+    
     <title>China's Wonders Explorer</title>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
@@ -74,17 +77,28 @@
             letter-spacing: 2px;
         }
 
-        .home-subtitle {
-            font-size: 1.5rem;
-            color: var(--secondary);
-            font-weight: bold;
-            margin-bottom: 25px;
-        }
-
+        /* ===== 修改 1 & 2: 讓標題和圖片在同一行，並變成橙色 ===== */
         .hero-icon {
-            font-size: 5rem;
+            font-size: 3rem; /* 調整字體大小以適應圖片 */
             margin-bottom: 15px;
             animation: float 3s ease-in-out infinite;
+            display: flex;
+            align-items: center; /* 垂直置中，保證同一行 */
+            justify-content: center;
+            gap: 15px; /* 文字和圖片的間距 */
+            color: #FF8C00; /* 變成橙色 */
+            font-weight: 900;
+        }
+
+        .hero-icon img {
+            height: 80px; /* 限制圖片高度，確保它和文字完美排在同一行 */
+            width: auto;
+        }
+
+        /* ===== 修改 3: 創建一個橙色加底線的 CSS 類別 ===== */
+        .highlight-orange {
+            color: #FF8C00;
+            text-decoration: underline;
         }
 
         @keyframes float {
@@ -392,11 +406,17 @@
     <!-- ================= 首頁 (Home Page) ================= -->
     <div id="homePage" class="page active">
         <div class="home-container">
-            <div class="hero-icon">China's Hidden Wonders<img src="src/boy-girl_.jpg"></div>
+            <!-- 已經加入 flex 排版讓標題和圖片在同一行，並由 CSS 控制為橙色 -->
+            <div class="hero-icon">China's Hidden Wonders<img src="src/boy-girl_.jpg" alt="Icon"></div>
             <h1 class="home-title"></h1>
-            <p class="home-subtitle">Learn English, Geography & Culture!</p>
+            
+            <!-- 原本的 Learn English... 已刪除 -->
+            
             <p style="font-size: 1.2rem; color: #555; margin-bottom: 30px;">
-               <b> Welcome, Explorer! 🌏</b> <b>I have hidden 6 wonders on the map of China. </b><b>Tell me which one you want to find first!</b>
+               <b> Welcome, Explorer! 🌏</b> 
+               <!-- 加上了 highlight-orange 類別，使指定文字變橙色且有底線 -->
+               <b>I have hidden <span class="highlight-orange">6 wonders</span> on the map of <span class="highlight-orange">China</span>. </b>
+               <b>Tell me which one you want to find first!</b>
             </p>
             <button class="btn btn-start" onclick="goToMap()">Start Exploring! 🚀</button>
         </div>
