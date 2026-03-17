@@ -1,253 +1,481 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>China's Hidden Wonders</title>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Noto+Sans+TC:wght@500;700&display=swap" rel="stylesheet">
+    <title>China's Wonders Explorer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-bg: #e0f7fa;
-            --land-color: #ffe082;
-            --btn-manmade: #ff7043;
-            --btn-natural: #66bb6a;
-            --accent: #f48fb1;
-            --text-color: #37474f;
+            --primary: #FF6B6B;
+            --secondary: #4ECDC4;
+            --accent: #FFE66D;
+            --dark: #2C3E50;
+            --light: #F7FFF7;
+            --success: #95E1D3;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Nunito', sans-serif;
         }
 
         body {
+            background-color: #a8e6cf;
+            background-image: linear-gradient(135deg, #a8e6cf 0%, #dcedc1 100%);
             margin: 0;
-            font-family: 'Noto Sans TC', 'Fredoka One', sans-serif;
-            background-color: var(--primary-bg);
-            color: var(--text-color);
+            padding: 20px;
+            color: var(--dark);
+            min-height: 100vh;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            height: 100vh;
-            overflow: hidden;
         }
 
-        #game-container {
-            width: 95%;
+        header {
+            text-align: center;
+            background: white;
+            padding: 15px 30px;
+            border-radius: 20px;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
             max-width: 800px;
-            height: 550px;
-            background: #fff;
-            border-radius: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            position: relative;
-            border: 8px solid #fff;
+            border: 4px solid var(--primary);
         }
 
-        /* --- Screens --- */
-        .screen {
-            display: none;
+        h1 {
+            color: var(--primary);
+            margin: 0 0 10px 0;
+            font-size: 2.2rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .teacher-msg {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .main-container {
+            position: relative;
             width: 100%;
-            height: 100%;
+            max-width: 800px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+            overflow: hidden;
+            border: 4px solid white;
+        }
+
+        .map-wrapper {
+            position: relative;
+            width: 100%;
+            padding-top: 75%; /* 4:3 Aspect Ratio */
+            background-color: #e3f2fd;
+            background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/China_blank_map.svg/800px-China_blank_map.svg.png');
+            background-size: cover;
+            background-position: center;
+        }
+
+        .pin {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background-color: var(--primary);
+            border-radius: 50% 50% 50% 0;
+            transform: rotate(-45deg);
+            cursor: pointer;
+            box-shadow: -4px 4px 6px rgba(0,0,0,0.3);
+            transition: all 0.3s bounce;
+            animation: bounce 2s infinite;
+        }
+
+        .pin::after {
+            content: '';
+            width: 14px;
+            height: 14px;
+            background: white;
+            position: absolute;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .pin:hover {
+            transform: rotate(-45deg) scale(1.2);
+            background-color: var(--accent);
+        }
+
+        .pin.completed {
+            background-color: var(--success);
+            animation: none;
+            cursor: default;
+        }
+
+        /* Keyframes for pin bounce */
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0) rotate(-45deg); }
+            40% { transform: translateY(-15px) rotate(-45deg); }
+            60% { transform: translateY(-7px) rotate(-45deg); }
+        }
+
+        /* Modal / Interaction Area */
+        .modal {
+            display: none;
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.95);
+            z-index: 10;
+            padding: 20px;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             text-align: center;
-            padding: 20px;
-            box-sizing: border-box;
+            animation: fadeIn 0.4s ease-in-out;
         }
 
-        .active { display: flex; }
-
-        /* --- Start Screen --- */
-        .title-text { font-size: 2.5rem; color: #ff5252; margin-bottom: 10px; }
-        .start-btn {
-            padding: 15px 40px;
-            font-size: 1.5rem;
-            background: var(--btn-natural);
-            color: white;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: transform 0.2s;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-        .start-btn:hover { transform: scale(1.1); }
-
-        /* --- Map Screen --- */
-        #map-screen { background: #b2ebf2; position: relative; }
-        .map-bg {
-            width: 100%;
-            height: 80%;
-            background: #ffe082;
-            border-radius: 20px;
-            position: relative;
-            overflow: hidden;
-            border: 4px solid #fbc02d;
-        }
-        
-        /* Landmark Pins */
-        .pin {
-            position: absolute;
-            cursor: pointer;
-            transition: transform 0.3s;
-            z-index: 10;
-        }
-        .pin:hover { transform: scale(1.3) rotate(-5deg); }
-        .pin span {
-            display: block;
-            background: white;
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-size: 12px;
-            font-weight: bold;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
         }
 
-        /* --- Challenge Popup --- */
-        #challenge-modal {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%) scale(0.8);
+        .landmark-img {
             width: 80%;
-            background: white;
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-            display: none;
-            z-index: 100;
-        }
-
-        .landmark-img { font-size: 60px; margin-bottom: 15px; }
-        .choice-btn {
-            margin: 10px;
-            padding: 12px 25px;
+            max-height: 250px;
+            object-fit: cover;
             border-radius: 15px;
-            border: none;
-            color: white;
-            font-size: 1.1rem;
-            cursor: pointer;
+            border: 5px solid var(--accent);
+            margin-bottom: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
 
-        /* --- Animations --- */
-        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-        .animate-bounce { animation: bounce 2s infinite ease-in-out; }
+        .question-box {
+            background: var(--light);
+            padding: 15px;
+            border-radius: 15px;
+            width: 90%;
+            border: 3px solid var(--secondary);
+            margin-bottom: 15px;
+        }
 
-        .fireworks { position: absolute; pointer-events: none; }
+        .btn {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 5px;
+            transition: 0.2s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            background: #3eb5ac;
+        }
+
+        .btn.manmade { background: #FF9F1C; }
+        .btn.natural { background: #2EC4B6; }
+
+        input[type="text"] {
+            padding: 10px 15px;
+            font-size: 1.1rem;
+            border: 2px solid var(--secondary);
+            border-radius: 20px;
+            width: 70%;
+            margin-right: 10px;
+            outline: none;
+        }
+
+        .error-msg {
+            color: var(--primary);
+            font-weight: bold;
+            margin-top: 10px;
+            min-height: 24px;
+        }
+
+        .pride-fact {
+            background: #FFF3CD;
+            color: #856404;
+            padding: 15px;
+            border-radius: 15px;
+            border: 2px dashed #FFEEBA;
+            margin-top: 15px;
+            font-size: 1.1rem;
+            display: none;
+        }
+
+        /* Badge Modal */
+        .badge-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.8);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .badge-content {
+            background: white;
+            padding: 40px;
+            border-radius: 30px;
+            max-width: 500px;
+            animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .badge-content h2 {
+            color: var(--primary);
+            font-size: 2rem;
+        }
+
+        .badge-icon {
+            font-size: 5rem;
+            margin: 10px 0;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0); }
+            100% { transform: scale(1); }
+        }
+
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-<div id="game-container">
-    <div id="start-screen" class="screen active">
-        <h1 class="title-text animate-bounce">Explorer! 🌏</h1>
-        <p style="font-size: 1.2rem;">I have hidden 6 wonders on the map of China.<br>Tell me which one you want to find first!</p>
-        <button class="start-btn" onclick="showScreen('map-screen')">Let's Go!</button>
-    </div>
-
-    <div id="map-screen" class="screen">
-        <h3>Click a landmark to explore!</h3>
-        <div class="map-bg" id="china-map">
-            <div class="pin" style="top: 25%; left: 60%;" onclick="openChallenge(0)">🏯<span>Great Wall</span></div>
-            <div class="pin" style="top: 55%; left: 45%;" onclick="openChallenge(1)">🌊<span>Yangtze</span></div>
-            <div class="pin" style="top: 60%; left: 15%;" onclick="openChallenge(2)">🏔<span>Everest</span></div>
-            <div class="pin" style="top: 40%; left: 75%;" onclick="openChallenge(3)">🏙<span>SH Tower</span></div>
-            <div class="pin" style="top: 65%; left: 35%;" onclick="openChallenge(4)">🪷<span>Buddha</span></div>
-            <div class="pin" style="top: 85%; left: 65%;" onclick="openChallenge(5)">🌉<span>HZMB</span></div>
+    <header>
+        <h1>China's Wonders Explorer</h1>
+        <div class="teacher-msg" id="teacherMsg">
+            "Welcome, Explorer! 🗺️ I have hidden 6 wonders on the map of China. Tell me which one you want to find first!"
         </div>
-        <div id="progress">Explored: 0/6</div>
-    </div>
+    </header>
 
-    <div id="challenge-modal">
-        <div id="modal-content">
-            <div class="landmark-img" id="lm-icon">🏯</div>
-            <h2 id="lm-name">The Great Wall</h2>
+    <div class="main-container">
+        <div class="map-wrapper" id="mapWrapper">
+            <!-- Pins will be injected here by JS -->
+        </div>
+
+        <div class="modal" id="interactionModal">
+            <img id="lmImage" class="landmark-img" src="" alt="Landmark">
+            <h2 id="lmTitle">Landmark Name</h2>
             
-            <div id="step-1">
-                <p>Is this wonder made by people or by nature?</p>
-                <button class="choice-btn" style="background: var(--btn-manmade)" onclick="checkType('Man-made')">Man-made</button>
-                <button class="choice-btn" style="background: var(--btn-natural)" onclick="checkType('Natural')">Natural</button>
+            <!-- Step 1: Man-made vs Natural -->
+            <div class="question-box" id="step1">
+                <p>Is this landmark <strong>Man-made</strong> or <strong>Natural</strong>?</p>
+                <button class="btn manmade" onclick="checkType('man-made')">Man-made</button>
+                <button class="btn natural" onclick="checkType('natural')">Natural</button>
+                <div class="error-msg" id="typeError"></div>
             </div>
 
-            <div id="step-2" style="display: none;">
-                <p id="correction-msg" style="color: #d32f2f; font-weight: bold;"></p>
-                <p>Ask the correct question:</p>
-                <button class="choice-btn" style="background: #5c6bc0" id="btn-high" onclick="checkQuestion('high')">How high is it?</button>
-                <button class="choice-btn" style="background: #5c6bc0" id="btn-long" onclick="checkQuestion('long')">How long is it?</button>
+            <!-- Step 2: Asking the Question -->
+            <div class="question-box hidden" id="step2">
+                <p>Great! Now, ask me about its size. <br><small>(Hint: Ask "How long..." or "How high...")</small></p>
+                <input type="text" id="questionInput" placeholder="Type your question here...">
+                <button class="btn" onclick="checkQuestion()">Ask Teacher</button>
+                <div class="error-msg" id="questionError"></div>
             </div>
 
-            <div id="step-3" style="display: none;">
-                <h3 style="color: #fbc02d">✨ Pride Fact ✨</h3>
-                <p id="pride-fact-text" style="font-size: 1.2rem; font-weight: bold;"></p>
-                <button class="start-btn" onclick="closeModal()">Next Wonder!</button>
+            <!-- Step 3: Success & Pride Fact -->
+            <div class="question-box hidden" id="step3">
+                <h3 style="color:var(--success);" id="answerText">Answer</h3>
+                <div class="pride-fact" id="prideFact" style="display:block;">
+                    🌟 <strong>Pride Fact:</strong> <span id="factText"></span>
+                </div>
+                <button class="btn" style="margin-top:15px; background:var(--primary);" onclick="closeModal()">Awesome! Back to Map</button>
             </div>
         </div>
     </div>
-</div>
 
-<script>
-    const landmarks = [
-        { name: "The Great Wall", type: "Man-made", q: "long", fact: "21,196 km long! A symbol of unity.", icon: "🏯" },
-        { name: "The Yangtze River", type: "Natural", q: "long", fact: "6,300 km long! The mother river of China.", icon: "🌊" },
-        { name: "Mount Everest", type: "Natural", q: "high", fact: "8,848.86 m high! The world’s highest peak.", icon: "🏔" },
-        { name: "The Shanghai Tower", type: "Man-made", q: "high", fact: "632 m high! A symbol of modern China.", icon: "🏙" },
-        { name: "Leshan Giant Buddha", type: "Man-made", q: "high", fact: "71 m high! A marvel of ancient art.", icon: "🪷" },
-        { name: "Hong Kong-Zhuhai-Macao Bridge", type: "Man-made", q: "long", fact: "55 km long! World’s longest sea-crossing bridge.", icon: "🌉" }
-    ];
+    <!-- Final Badge -->
+    <div class="badge-modal" id="badgeModal">
+        <div class="badge-content">
+            <div class="badge-icon">🏅</div>
+            <h2>Explorer Badge Unlocked!</h2>
+            <p style="font-size: 1.3rem; font-weight: bold; color: #333;">Proud Discoverer of China’s Wonders!</p>
+            <p>You have successfully explored all 6 landmarks and asked the correct questions!</p>
+            <button class="btn" style="background:var(--primary); font-size: 1.2rem; margin-top: 20px;" onclick="location.reload()">Play Again</button>
+        </div>
+    </div>
 
-    let currentLM = null;
-    let exploredCount = 0;
-    const exploredSet = new Set();
+    <script>
+        // THE LANDMARKS DATA (Knowledge Base)
+        const landmarks =[
+            {
+                id: 'great-wall',
+                name: 'The Great Wall',
+                type: 'man-made',
+                measureType: 'length',
+                answer: 'It is 21,196 km long!',
+                fact: 'It is a mighty symbol of unity and history.',
+                img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/The_Great_Wall_of_China_at_Jinshanling-edit.jpg/800px-The_Great_Wall_of_China_at_Jinshanling-edit.jpg',
+                top: '32%', left: '72%'
+            },
+            {
+                id: 'yangtze-river',
+                name: 'The Yangtze River',
+                type: 'natural',
+                measureType: 'length',
+                answer: 'It is 6,300 km long!',
+                fact: 'It is known as the mother river of China.',
+                img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Qutang_Gorge.jpg/800px-Qutang_Gorge.jpg',
+                top: '55%', left: '60%'
+            },
+            {
+                id: 'everest',
+                name: 'Mount Everest (Qomolangma)',
+                type: 'natural',
+                measureType: 'height',
+                answer: 'It is 8,848.86 m high!',
+                fact: 'It is the world’s highest peak.',
+                img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Everest_kalapatthar.jpg/800px-Everest_kalapatthar.jpg',
+                top: '65%', left: '25%'
+            },
+            {
+                id: 'shanghai-tower',
+                name: 'The Shanghai Tower',
+                type: 'man-made',
+                measureType: 'height',
+                answer: 'It is 632 m high!',
+                fact: 'It is a brilliant symbol of modern China and green engineering.',
+                img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Shanghai_Tower_2015.jpg/800px-Shanghai_Tower_2015.jpg',
+                top: '55%', left: '85%'
+            },
+            {
+                id: 'leshan-buddha',
+                name: 'The Leshan Giant Buddha',
+                type: 'man-made',
+                measureType: 'height',
+                answer: 'It is 71 m high!',
+                fact: 'It is a breathtaking marvel of ancient art carved out of a cliff.',
+                img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Leshan_Buddha_Statue_View.jpg/800px-Leshan_Buddha_Statue_View.jpg',
+                top: '62%', left: '50%'
+            },
+            {
+                id: 'hzmb-bridge',
+                name: 'The Hong Kong-Zhuhai-Macao Bridge',
+                type: 'man-made',
+                measureType: 'length',
+                answer: 'It is 55 km long!',
+                fact: 'It is the world\'s longest sea-crossing bridge!',
+                img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Hong_Kong-Zhuhai-Macao_Bridge_2018.jpg/800px-Hong_Kong-Zhuhai-Macao_Bridge_2018.jpg',
+                top: '82%', left: '68%'
+            }
+        ];
 
-    function showScreen(id) {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-    }
+        let currentLandmark = null;
+        let completedCount = 0;
 
-    function openChallenge(index) {
-        currentLM = landmarks[index];
-        document.getElementById('lm-name').innerText = currentLM.name;
-        document.getElementById('lm-icon').innerText = currentLM.icon;
-        document.getElementById('challenge-modal').style.display = 'block';
-        document.getElementById('step-1').style.display = 'block';
-        document.getElementById('step-2').style.display = 'none';
-        document.getElementById('step-3').style.display = 'none';
-        document.getElementById('correction-msg').innerText = "";
-    }
+        // Initialize Map
+        const mapWrapper = document.getElementById('mapWrapper');
+        landmarks.forEach(lm => {
+            const pin = document.createElement('div');
+            pin.className = 'pin';
+            pin.id = `pin-${lm.id}`;
+            pin.style.top = lm.top;
+            pin.style.left = lm.left;
+            pin.title = lm.name;
+            pin.onclick = () => openModal(lm);
+            mapWrapper.appendChild(pin);
+        });
 
-    function checkType(choice) {
-        if (choice === currentLM.type) {
-            document.getElementById('step-1').style.display = 'none';
-            document.getElementById('step-2').style.display = 'block';
-        } else {
-            alert("Try again! Is it made by humans or nature?");
+        function openModal(landmark) {
+            // Prevent reopening if already completed
+            const pin = document.getElementById(`pin-${landmark.id}`);
+            if(pin.classList.contains('completed')) return;
+
+            currentLandmark = landmark;
+            
+            // Setup UI
+            document.getElementById('lmImage').src = landmark.img;
+            document.getElementById('lmTitle').innerText = landmark.name;
+            
+            // Reset Views
+            document.getElementById('step1').classList.remove('hidden');
+            document.getElementById('step2').classList.add('hidden');
+            document.getElementById('step3').classList.add('hidden');
+            
+            document.getElementById('typeError').innerText = "";
+            document.getElementById('questionError').innerText = "";
+            document.getElementById('questionInput').value = "";
+            
+            // Show Modal
+            document.getElementById('interactionModal').style.display = 'flex';
         }
-    }
 
-    function checkQuestion(choice) {
-        if (choice === currentLM.q) {
-            showFact();
-        } else {
-            const msg = currentLM.q === 'high' ? 
-                "For mountains/towers, we ask 'How high'. Try again!" : 
-                "For rivers/walls/bridges, we ask 'How long'. Try again!";
-            document.getElementById('correction-msg').innerText = msg;
+        function checkType(selectedType) {
+            if(selectedType === currentLandmark.type) {
+                document.getElementById('step1').classList.add('hidden');
+                document.getElementById('step2').classList.remove('hidden');
+                document.getElementById('questionInput').focus();
+            } else {
+                document.getElementById('typeError').innerText = "Oops! That's not right. Try again!";
+            }
         }
-    }
 
-    function showFact() {
-        document.getElementById('step-2').style.display = 'none';
-        document.getElementById('step-3').style.display = 'block';
-        document.getElementById('pride-fact-text').innerText = currentLM.fact;
-        
-        if(!exploredSet.has(currentLM.name)) {
-            exploredSet.add(currentLM.name);
-            exploredCount++;
-            document.getElementById('progress').innerText = `Explored: ${exploredCount}/6`;
+        function checkQuestion() {
+            const inputField = document.getElementById('questionInput');
+            let q = inputField.value.toLowerCase().trim();
+            const errorBox = document.getElementById('questionError');
+            
+            if(q === "") {
+                errorBox.innerText = "Please type a question!";
+                return;
+            }
+
+            // Logic matching English grammar requirements
+            if(currentLandmark.measureType === 'length') {
+                if(q.includes('how high') || q.includes('how tall')) {
+                    errorBox.innerText = "For rivers, walls, or bridges, we ask 'How long'. Try again!";
+                    return;
+                } else if(q.includes('how long')) {
+                    showSuccess();
+                } else {
+                    errorBox.innerText = "Please start your question with 'How long...'";
+                }
+            } else if(currentLandmark.measureType === 'height') {
+                if(q.includes('how long')) {
+                    errorBox.innerText = "For mountains, towers, or statues, we ask 'How high' or 'How tall'. Try again!";
+                    return;
+                } else if(q.includes('how high') || q.includes('how tall')) {
+                    showSuccess();
+                } else {
+                    errorBox.innerText = "Please start your question with 'How high...' or 'How tall...'";
+                }
+            }
         }
-    }
 
-    function closeModal() {
-        document.getElementById('challenge-modal').style.display = 'none';
-        if (exploredCount === 6) {
-            alert("🌟 Congratulations, Great Explorer! You found all wonders! 🏅");
+        function showSuccess() {
+            document.getElementById('step2').classList.add('hidden');
+            document.getElementById('step3').classList.remove('hidden');
+            
+            document.getElementById('answerText').innerText = currentLandmark.answer;
+            document.getElementById('factText').innerText = currentLandmark.fact;
+
+            // Mark map pin as completed
+            const pin = document.getElementById(`pin-${currentLandmark.id}`);
+            pin.classList.add('completed');
         }
-    }
-</script>
 
+        function closeModal() {
+            document.getElementById('interactionModal').style.display = 'none';
+            completedCount++;
+            
+            // Update Teacher Message
+            document.getElementById('teacherMsg').innerText = `Great job! You have found ${completedCount} out of 6 wonders. Keep going!`;
+
+            if(completedCount === landmarks.length) {
+                setTimeout(() => {
+                    document.getElementById('badgeModal').style.display = 'flex';
+                }, 500);
+            }
+        }
+    </script>
 </body>
 </html>
