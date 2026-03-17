@@ -162,7 +162,7 @@
             width: 100%;
             padding-top: 73%; /* 對齊地圖比例 */
             background-color: #f1f2f6;
-            /* 使用彩色高解析度中國地形圖 */
+            /* 穩定的維基全彩中國地形圖 */
             background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/China_edcp_location_map.svg/1024px-China_edcp_location_map.svg.png');
             background-size: cover;
             background-position: center;
@@ -249,6 +249,7 @@
             margin-top: 10px;
             margin-bottom: 15px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            background-color: #eee; /* 圖片載入前的底色 */
         }
 
         .question-box {
@@ -361,8 +362,8 @@
                 <div class="modal" id="interactionModal">
                     <h2 id="lmTitle" style="color: var(--dark); margin: 0 0 5px 0;">Landmark Name</h2>
                     
-                    <!-- 這裡會顯示高清圖片 -->
-                    <img id="lmImage" class="landmark-img" src="" alt="Landmark">
+                    <!-- 顯示穩定高清圖片，加入錯誤顯示備案 -->
+                    <img id="lmImage" class="landmark-img" src="" alt="Landmark" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/300px-No_image_available.svg.png'">
                     
                     <!-- 步驟 1: 自然還是人造 -->
                     <div class="question-box" id="step1">
@@ -385,233 +386,4 @@
                     <div class="question-box hidden" id="step3">
                         <h3 style="color: var(--success); font-size: 1.3rem; margin-top: 0;" id="answerText">Answer</h3>
                         <div class="pride-fact" id="prideFact">
-                            🌟 <strong>Pride Fact:</strong> <br><span id="factText"></span>
-                        </div>
-                    </div>
-
-                    <!-- Modal 內部專屬退出/返回按鈕 -->
-                    <div class="modal-footer">
-                        <button class="btn btn-back" onclick="closeModal()">⬅️ Back to Map</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Map 頁面底部退出/返回首頁按鈕 -->
-        <div class="bottom-bar">
-            <button class="btn btn-back" onclick="goToHome()">🏠 Exit / Back to Home</button>
-        </div>
-    </div>
-
-    <!-- ================= 結業勳章 (Badge Modal) ================= -->
-    <div class="badge-modal" id="badgeModal">
-        <div class="badge-content">
-            <div class="badge-icon">🏅</div>
-            <h2>Explorer Badge Unlocked!</h2>
-            <p style="font-size: 1.3rem; font-weight: bold; color: #333;">Proud Discoverer of China’s Wonders!</p>
-            <p>Amazing job! You have explored all 6 landmarks and asked perfect English questions!</p>
-            <button class="btn btn-start" style="margin-top: 20px;" onclick="location.reload()">Play Again 🔄</button>
-        </div>
-    </div>
-
-    <!-- ================= JavaScript 邏輯 ================= -->
-    <script>
-        // 資料庫：更換了全新的高清/穩定的圖片，並對齊彩色地形圖座標
-        const landmarks =[
-            {
-                id: 'great-wall',
-                name: 'The Great Wall',
-                type: 'man-made',
-                measureType: 'length',
-                answer: 'It is 21,196 km long!',
-                fact: 'It is a mighty symbol of unity and history. It was built to protect ancient China.',
-                // 高清長城圖片
-                img: 'https://images.unsplash.com/photo-1508804185872-d7badad00f7d?w=800&auto=format&fit=crop',
-                top: '35%', left: '72%' 
-            },
-            {
-                id: 'yangtze-river',
-                name: 'The Yangtze River',
-                type: 'natural',
-                measureType: 'length',
-                answer: 'It is 6,300 km long!',
-                fact: 'It is known as the "Mother River" of China, nurturing Chinese civilization for thousands of years.',
-                // 長江三峽經典圖片
-                img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Qutang_Gorge.jpg/800px-Qutang_Gorge.jpg',
-                top: '58%', left: '65%'
-            },
-            {
-                id: 'everest',
-                name: 'Mount Everest (Qomolangma)',
-                type: 'natural',
-                measureType: 'height',
-                answer: 'It is 8,848.86 m high!',
-                fact: 'It is the highest peak in the entire world, situated on the border of China and Nepal.',
-                // 珠穆朗瑪峰高清圖片
-                img: 'https://images.unsplash.com/photo-1522163182402-834f871fd851?w=800&auto=format&fit=crop',
-                top: '65%', left: '18%'
-            },
-            {
-                id: 'shanghai-tower',
-                name: 'The Shanghai Tower',
-                type: 'man-made',
-                measureType: 'height',
-                answer: 'It is 632 m high!',
-                fact: 'It is a brilliant symbol of modern China and features smart, green engineering.',
-                // 上海中心大廈高清圖片
-                img: 'https://images.unsplash.com/photo-1546872599-ac138e6e5a6a?w=800&auto=format&fit=crop',
-                top: '55%', left: '85%'
-            },
-            {
-                id: 'leshan-buddha',
-                name: 'The Leshan Giant Buddha',
-                type: 'man-made',
-                measureType: 'height',
-                answer: 'It is 71 m high!',
-                fact: 'It is a breathtaking marvel of ancient art, carved entirely out of a cliff over 1,000 years ago.',
-                // 樂山大佛經典圖片
-                img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Leshan_Giant_Buddha_%287311756540%29.jpg/800px-Leshan_Giant_Buddha_%287311756540%29.jpg',
-                top: '62%', left: '50%'
-            },
-            {
-                id: 'hzmb-bridge',
-                name: 'The Hong Kong-Zhuhai-Macao Bridge',
-                type: 'man-made',
-                measureType: 'length',
-                answer: 'It is 55 km long!',
-                fact: 'It is the world\'s longest sea-crossing bridge, showcasing China\'s amazing modern engineering!',
-                // 港珠澳大橋經典圖片
-                img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Hong_Kong-Zhuhai-Macau_Bridge.jpg/800px-Hong_Kong-Zhuhai-Macau_Bridge.jpg',
-                top: '82%', left: '72%'
-            }
-        ];
-
-        let currentLandmark = null;
-        let completedCount = 0;
-
-        // 頁面切換功能
-        function goToMap() {
-            document.getElementById('homePage').classList.remove('active');
-            document.getElementById('mapPage').classList.add('active');
-        }
-
-        function goToHome() {
-            // 如果老師/學生想隨時退出，返回首頁
-            document.getElementById('mapPage').classList.remove('active');
-            document.getElementById('homePage').classList.add('active');
-        }
-
-        // 初始化地圖標記 (Pins)
-        const mapWrapper = document.getElementById('mapWrapper');
-        landmarks.forEach(lm => {
-            const pin = document.createElement('div');
-            pin.className = 'pin';
-            pin.id = `pin-${lm.id}`;
-            pin.style.top = lm.top;
-            pin.style.left = lm.left;
-            pin.title = lm.name;
-            pin.onclick = () => openModal(lm);
-            mapWrapper.appendChild(pin);
-        });
-
-        // 打開任務視窗
-        function openModal(landmark) {
-            // 如果已經完成，不再打開
-            const pin = document.getElementById(`pin-${landmark.id}`);
-            if(pin.classList.contains('completed')) return;
-
-            currentLandmark = landmark;
-            
-            // 設定圖片與標題
-            document.getElementById('lmImage').src = landmark.img;
-            document.getElementById('lmTitle').innerText = landmark.name;
-            
-            // 重置介面狀態
-            document.getElementById('step1').classList.remove('hidden');
-            document.getElementById('step2').classList.add('hidden');
-            document.getElementById('step3').classList.add('hidden');
-            
-            document.getElementById('typeError').innerText = "";
-            document.getElementById('questionError').innerText = "";
-            document.getElementById('questionInput').value = "";
-            
-            // 顯示 Modal
-            document.getElementById('interactionModal').style.display = 'flex';
-        }
-
-        // 關閉任務視窗返回地圖
-        function closeModal() {
-            document.getElementById('interactionModal').style.display = 'none';
-        }
-
-        // 檢查 Natural / Man-made
-        function checkType(selectedType) {
-            if(selectedType === currentLandmark.type) {
-                document.getElementById('step1').classList.add('hidden');
-                document.getElementById('step2').classList.remove('hidden');
-                document.getElementById('questionInput').focus();
-            } else {
-                document.getElementById('typeError').innerText = "Oops! That's not right. Try again! 🧐";
-            }
-        }
-
-        // 檢查英文問句
-        function checkQuestion() {
-            const inputField = document.getElementById('questionInput');
-            let q = inputField.value.toLowerCase().trim();
-            const errorBox = document.getElementById('questionError');
-            
-            if(q === "") {
-                errorBox.innerText = "Please type a question! 📝";
-                return;
-            }
-
-            // 英文語法與自然特徵配對邏輯
-            if(currentLandmark.measureType === 'length') {
-                if(q.includes('how high') || q.includes('how tall')) {
-                    errorBox.innerText = "For rivers, walls, or bridges, we ask 'How long'. Try again! 😉";
-                    return;
-                } else if(q.includes('how long')) {
-                    showSuccess();
-                } else {
-                    errorBox.innerText = "Please start your question with 'How long...' 📏";
-                }
-            } else if(currentLandmark.measureType === 'height') {
-                if(q.includes('how long')) {
-                    errorBox.innerText = "For mountains, towers, or statues, we ask 'How high' or 'How tall'. Try again! 😉";
-                    return;
-                } else if(q.includes('how high') || q.includes('how tall')) {
-                    showSuccess();
-                } else {
-                    errorBox.innerText = "Please start your question with 'How high...' or 'How tall...' 🏔️";
-                }
-            }
-        }
-
-        // 成功答對並顯示 Pride Fact
-        function showSuccess() {
-            document.getElementById('step2').classList.add('hidden');
-            document.getElementById('step3').classList.remove('hidden');
-            
-            document.getElementById('answerText').innerText = currentLandmark.answer;
-            document.getElementById('factText').innerText = currentLandmark.fact;
-
-            // 將地圖上的圖釘變成綠色已完成狀態
-            const pin = document.getElementById(`pin-${currentLandmark.id}`);
-            pin.classList.add('completed');
-
-            completedCount++;
-            
-            // 更新老師的話
-            document.getElementById('teacherMsg').innerText = `Great job! You have found ${completedCount} out of 6 wonders. Keep exploring!`;
-
-            // 如果全部完成，顯示頒獎畫面
-            if(completedCount === landmarks.length) {
-                setTimeout(() => {
-                    document.getElementById('badgeModal').style.display = 'flex';
-                }, 1000);
-            }
-        }
-    </script>
-</body>
-</html>
+                            🌟 <strong>Pride Fact:</stron
