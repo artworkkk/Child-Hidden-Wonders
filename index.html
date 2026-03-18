@@ -70,7 +70,7 @@
         <div id="intro-page">
             <div>
                 <h1>常識科溫習遊戲</h1>
-                <p class="intro-desc">聆聽問題並說出正確答案。<br>如果 <b style="color:var(--danger)">10 秒</b>內沒偵測到聲音，系統會自動重試。</p>
+                <p class="intro-desc">聆聽問題並說出正確答案。<br>題目已<b>隨機排序</b>，10 秒內沒聲音會自動重試。</p>
             </div>
             <button id="btn-start" class="btn btn-primary">開始挑戰</button>
         </div>
@@ -104,7 +104,7 @@
 
 <script>
 $(document).ready(function() {
-    const quizData = [
+    let quizData = [
         { q: "不同的服務人員為我們提供不同的服務，為____帶來方便。", a: "生活", d: "沒錯！生活變得更方便了。" },
         { q: "香港的社區有不同的____，例如：到沙田城門河踏單車。", a: "特色", d: "正確！每個社區都有自己的特色設施。" },
         { q: "我們應該與鄰居建立____的關係，令生活更愉快。", a: "友好", d: "答對了！友好關係非常重要。" },
@@ -117,6 +117,7 @@ $(document).ready(function() {
         { q: "魯班使用鐵片製成了____來伐木。", a: "鋸子", d: "聰明！你已經完成所有題目了。" }
     ];
 
+    let currentQuestions = []; // 用於存放隨機化後的題目
     let currentIndex = 0;
     let silenceTimer; 
     const synth = window.speechSynthesis;
@@ -124,15 +125,31 @@ $(document).ready(function() {
     let recognition = new SpeechRecognition();
     recognition.lang = 'zh-HK';
 
+    // 隨機洗牌函式 (Fisher-Yates Shuffle)
+    function shuffleArray(array) {
+        let shuffled = [...array];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[shuffled[i]]];
+            // 修正洗牌邏輯
+            let temp = shuffled[i];
+            shuffled[i] = shuffled[j];
+            shuffled[j] = temp;
+        }
+        return shuffled;
+    }
+
     // 啟動按鈕
     $('#btn-start').on('click', function() {
+        // 核心修改：每次開始都隨機排列題目
+        currentQuestions = shuffleArray(quizData);
         $('#intro-page').hide();
         $('#quiz-page').css('display', 'flex');
         currentIndex = 0;
         loadQuestion();
     });
 
-    // 退出按鈕：完全清理狀態並回首頁
+    // 退出按鈕
     $('#btn-exit').on('click', function() {
         resetApp();
     });
@@ -153,16 +170,16 @@ $(document).ready(function() {
     }
 
     function loadQuestion() {
-        if (currentIndex >= quizData.length) {
+        if (currentIndex >= currentQuestions.length) {
             $('#main-status').text("🏆 溫習完成！");
-            $('#question-text').text("做得太好了！你已經掌握了所有重點內容。");
+            $('#question-text').text("做得太好了！你已經隨機完成了所有題目。");
             $('#timer-display').text("🌟");
-            speak("恭喜你，溫習完成。");
+            speak("恭喜你，所有隨機挑戰完成。");
             return;
         }
 
-        const item = quizData[currentIndex];
-        // 進入新題目時重置空白處為「？」
+        const item = currentQuestions[currentIndex];
+        // 重置填充框
         $('#question-text').html(`${currentIndex+1}. ${item.q.replace("____", "<span class='blank-space'>？</span>")}`);
         $('#main-status').text("準備中").css("color", "var(--primary)");
         
@@ -174,7 +191,8 @@ $(document).ready(function() {
     function promptAndCount() {
         $('#main-status').text("請準備作答").css("color", "var(--accent)");
         speak("請準備作答", function() {
-            startCountdown(3);
+            // 核心修改：作答前準備時間改為 1 秒
+            startCountdown(1);
         });
     }
 
@@ -197,7 +215,7 @@ $(document).ready(function() {
         $('#main-status').text("請說話...").css("color", "var(--success)");
         recognition.start();
 
-        // 核心修改：靜音自動重試時間改為 10 秒 (10000ms)
+        // 靜音計時器：10 秒
         clearTimeout(silenceTimer);
         silenceTimer = setTimeout(() => {
             recognition.stop();
@@ -208,11 +226,10 @@ $(document).ready(function() {
     recognition.onresult = function(event) {
         clearTimeout(silenceTimer); 
         const result = event.results[0][0].transcript;
-        const item = quizData[currentIndex];
+        const item = currentQuestions[currentIndex];
 
         if (result.includes(item.a)) {
             $('#main-status').text("✅ 正確").css("color", "var(--success)");
-            // 答對時在畫面上填入答案
             $('#question-text').find('.blank-space').text(item.a); 
             speak(item.d, function() {
                 currentIndex++;
@@ -225,7 +242,6 @@ $(document).ready(function() {
 
     function handleSilence() {
         $('#main-status').text("未偵測到回應...").css("color", "var(--danger)");
-        // 暫停 0.5 秒後彈出錯誤畫面
         setTimeout(() => {
             showErrorAlert("⌛ 偵測不到聲音", true);
         }, 500); 
@@ -233,7 +249,6 @@ $(document).ready(function() {
 
     recognition.onerror = function() {
         clearTimeout(silenceTimer);
-        // 如果是收音錯誤也觸發補答
         showErrorAlert("⚠️ 錄音錯誤");
     };
 
@@ -252,7 +267,7 @@ $(document).ready(function() {
             } else {
                 clearInterval(retryInt);
                 $('#error-overlay').hide();
-                promptAndCount(); // 重新回到「請準備作答」流程
+                promptAndCount(); 
             }
         }, 1000);
     }
