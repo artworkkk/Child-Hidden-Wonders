@@ -3,164 +3,186 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>板塊構造論 - 語音互動教學</title>
+    <title>板塊構造論 - 專業語音互動教學</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
-        :root { --primary: #2c3e50; --accent: #e67e22; --success: #27ae60; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #ecf0f1; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-        .container { background: white; width: 90%; max-width: 700px; padding: 30px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); }
+        :root { --primary: #2c3e50; --accent: #e67e22; --danger: #c0392b; --success: #27ae60; }
+        body { font-family: '微軟正黑體', sans-serif; background: #f4f7f6; margin: 0; overflow: hidden; }
         
-        /* 介紹頁面樣式 */
-        #intro-section { line-height: 1.6; }
-        .highlight-box { background: #fdf2e9; border-left: 5px solid var(--accent); padding: 15px; margin: 15px 0; }
+        .container { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; padding: 20px; box-sizing: border-box; }
         
-        /* 挑戰頁面樣式 */
-        #quiz-section { display: none; text-align: center; }
-        .countdown { font-size: 3rem; color: var(--accent); font-weight: bold; height: 80px; }
-        .question-display { font-size: 1.4rem; margin: 20px 0; padding: 20px; background: #f9f9f9; border-radius: 10px; }
-        .blank { border-bottom: 3px solid var(--primary); color: var(--accent); padding: 0 10px; min-width: 80px; display: inline-block; }
+        /* 教學頁面 */
+        #intro-page { max-width: 800px; background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .content-text { line-height: 1.8; color: #444; font-size: 1.1rem; }
+
+        /* 問答頁面 */
+        #quiz-page { display: none; width: 100%; text-align: center; }
+        .q-card { background: white; padding: 40px; border-radius: 25px; display: inline-block; width: 80%; max-width: 600px; position: relative; }
         
-        #status-indicator { font-size: 0.9rem; color: #7f8c8d; margin-top: 10px; }
-        .btn { background: var(--primary); color: white; border: none; padding: 12px 30px; border-radius: 30px; cursor: pointer; font-size: 1.1rem; margin-top: 20px; }
-        .btn:hover { opacity: 0.9; }
-        .feedback { margin-top: 20px; font-weight: bold; min-height: 50px; }
+        /* 狀態提示 */
+        #main-status { font-size: 2.5rem; font-weight: bold; margin-bottom: 20px; color: var(--primary); }
+        #timer-display { font-size: 5rem; color: var(--accent); font-weight: bold; height: 120px; }
+        #question-display { font-size: 1.5rem; margin: 20px 0; min-height: 60px; color: #34495e; }
+        .blank { border-bottom: 4px solid var(--accent); color: var(--accent); padding: 0 10px; font-weight: bold; }
+
+        /* 強烈錯誤提示 Overlay */
+        #error-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(192, 57, 43, 0.9); z-index: 100;
+            flex-direction: column; align-items: center; justify-content: center;
+            color: white; text-align: center;
+        }
+        #error-overlay h2 { font-size: 4rem; margin: 0; }
+        #error-overlay p { font-size: 2rem; }
+
+        .btn { background: var(--primary); color: white; border: none; padding: 15px 40px; border-radius: 50px; cursor: pointer; font-size: 1.2rem; transition: 0.3s; }
+        .btn:hover { transform: scale(1.05); background: #34495e; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div id="intro-section">
-        <h1 style="color:var(--primary)">🌎 板塊構造論教學</h1>
-        <p>板塊構造論認為地球的岩石圈是由多個<b>板塊</b>拼合而成，並在<b>軟流圈</b>上移動。</p>
-        <div class="highlight-box">
-            <b>三大邊界類型：</b><br>
-            1. <b>聚合性</b>：板塊擠壓（如海溝、山脈）。<br>
-            2. <b>張裂性</b>：板塊分離（如中洋脊）。<br>
-            3. <b>錯動性</b>：板塊水平摩擦。
-        </div>
-        <p>準備好進行語音測驗了嗎？請確保麥克風已開啟。</p>
-        <button class="btn" onclick="startChallengeMode()">開始語音挑戰</button>
+<div class="container" id="intro-page">
+    <h1>🌍 板塊構造論：核心知識</h1>
+    <div class="content-text">
+        <p>地球的<b>岩石圈</b>是由板塊拼合而成，下方是具塑性的<b>軟流圈</b>。板塊邊界分為三類：</p>
+        <ul>
+            <li><b>聚合性邊界</b>：互相擠壓，形成<b>海溝</b>或褶曲山脈。</li>
+            <li><b>張裂性邊界</b>：互相分離，形成<b>中洋脊</b>或裂谷。</li>
+            <li><b>錯動性邊界</b>：水平滑動，發生轉形斷層。</li>
+        </ul>
+        <p>板塊運動的動力來自於<b>地函對流</b>。</p>
     </div>
+    <button class="btn" onclick="goToQuiz()">準備好，開始測驗！</button>
+</div>
 
-    <div id="quiz-section">
-        <h2 id="cat-title">知識問答</h2>
-        <div class="countdown" id="timer"></div>
-        <div class="question-display" id="q-text"></div>
-        <div id="status-indicator">等待指令...</div>
-        <div id="feedback-text" class="feedback"></div>
+<div class="container" id="quiz-page">
+    <div class="q-card">
+        <div id="main-status">等待中</div>
+        <div id="timer-display"></div>
+        <div id="question-display">載入題目中...</div>
+        <div id="live-transcript" style="color: #95a5a6; font-style: italic;"></div>
     </div>
 </div>
 
+<div id="error-overlay">
+    <h2>❌ 回答不正確</h2>
+    <p id="retry-msg">請準備，3 秒後重新補答</p>
+</div>
+
 <script>
-// 1. 題目數據庫
 const quizData = [
-    { q: "地球的最外層是由____拼合而成的。", a: "板塊", d: "沒錯！岩石圈由大大小小的板塊組成，就像拼圖一樣。" },
-    { q: "板塊是在哪一層構造之上進行移動的？答案是____。", a: "軟流圈", d: "正確。軟流圈具有塑性，讓上方的板塊可以滑動。" },
-    { q: "當板塊互相擠壓，這種邊界稱為____板塊邊界。", a: "聚合", d: "正確。聚合性邊界常會產生海溝和高大的山脈。" },
-    { q: "兩板塊分離，形成新地殼的邊界稱為____性邊界。", a: "張裂", d: "對了。例如中洋脊就是典型的張裂性板塊邊界。" },
-    { q: "板塊移動的主因是地函的____現象。", a: "對流", d: "非常棒。地函橫向密度變化產生的對流是板塊運動的動力源。" }
+    { q: "地球的最外層稱為____圈，是由板塊組成的。", a: "岩石", d: "岩石圈是由地殼和上地函頂部組成的剛性外殼。" },
+    { q: "板塊是在哪一層構造之上進行移動的？答案是____圈。", a: "軟流", d: "軟流圈位於岩石圈下方，處於熔融狀態，方便板塊滑動。" },
+    { q: "兩板塊分離，形成新地殼的邊界稱為____型邊界。", a: "張裂", d: "沒錯，中洋脊就是典型的張裂型邊界。" },
+    { q: "板塊移動的主要原因是因為地函產生的____現象。", a: "對流", d: "地函對流產生的熱能推動了上方板塊的運動。" },
+    { q: "法國學者勒皮雄在1968年將全球劃分為____大板塊。", a: "六", d: "這六大板塊包括歐亞、非洲、美洲、太平洋、印度洋及南極洲板塊。" }
 ];
 
 let currentIndex = 0;
 const synth = window.speechSynthesis;
-const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
 const recognition = new SpeechRecognition();
 
-recognition.lang = 'zh-HK'; // 設定為粵語，國語請改 zh-TW
+recognition.lang = 'zh-HK'; 
 recognition.interimResults = false;
 
-// 2. 切換到挑戰模式
-function startChallengeMode() {
-    $('#intro-section').hide();
-    $('#quiz-section').fadeIn();
+function speak(text, callback) {
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = 'zh-HK';
+    utter.rate = 1.0;
+    utter.onend = callback;
+    synth.speak(utter);
+}
+
+function goToQuiz() {
+    $('#intro-page').hide();
+    $('#quiz-page').css('display', 'flex');
     loadQuestion();
 }
 
-// 3. 載入題目
 function loadQuestion() {
     if (currentIndex >= quizData.length) {
-        $('#q-text').html("🎉 恭喜完成所有課程！");
-        speak("恭喜你，已經掌握了板塊構造論的基本知識。");
+        $('#main-status').text("🏆 挑戰完成！");
+        $('#question-display').text("你已經掌握了板塊構造論的重點。");
+        speak("恭喜你完成所有題目！");
         return;
     }
+
+    const item = quizData[currentIndex];
+    $('#question-display').html(item.q.replace("____", "<span class='blank'>？</span>"));
+    $('#live-transcript').text("");
     
-    let item = quizData[currentIndex];
-    let displayQ = item.q.replace("____", "<span class='blank'>？</span>");
-    $('#q-text').html(displayQ);
-    $('#feedback-text').text("");
-    
-    // 朗讀題目
+    // 先讀出題目
     speak(item.q.replace("____", "什麼"), function() {
-        startCountdown();
+        prepareToAnswer();
     });
 }
 
-// 4. 倒數 3, 2, 1 邏輯
-function startCountdown() {
-    let count = 3;
-    $('#timer').text(count);
+// 核心流程：提示 -> 倒數 -> 錄音
+function prepareToAnswer() {
+    $('#main-status').text("請準備作答");
+    speak("請準備作答", function() {
+        startCountdown(3);
+    });
+}
+
+function startCountdown(seconds) {
+    let count = seconds;
+    $('#timer-display').text(count);
     
     const interval = setInterval(() => {
         count--;
         if (count > 0) {
-            $('#timer').text(count);
-            // 可以選擇加入倒數聲效
+            $('#timer-display').text(count);
         } else {
             clearInterval(interval);
-            $('#timer').text("請說話...");
-            startListening();
+            $('#timer-display').text("🎤");
+            $('#main-status').text("請說話...");
+            recognition.start();
         }
     }, 1000);
 }
 
-// 5. 語音辨識
-function startListening() {
-    $('#status-indicator').text("🎤 麥克風已開啟...");
-    recognition.start();
-}
-
+// 語音識別結果
 recognition.onresult = function(event) {
     const userAnswer = event.results[0][0].transcript;
     const item = quizData[currentIndex];
-    
-    $('#status-indicator').text("辨識內容：" + userAnswer);
-    
+    $('#live-transcript').text("你說的是：" + userAnswer);
+
     if (userAnswer.includes(item.a)) {
-        // 答對了
-        $('#feedback-text').html(`<span style="color:var(--success)">✅ 答對了！</span>`);
-        $('#timer').text("👍");
+        // 答對邏輯
+        $('#main-status').text("✅ 正確！").css("color", "var(--success)");
         speak(item.d, function() {
             currentIndex++;
-            setTimeout(loadQuestion, 1000);
+            $('#main-status').css("color", "var(--primary)");
+            setTimeout(loadQuestion, 500);
         });
     } else {
-        // 答錯了
-        $('#feedback-text').html(`<span style="color:#e74c3c">❌ 聽起來不太像... 再試一次</span>`);
-        retryFlow();
+        triggerError();
     }
 };
 
-// 6. 錯誤處理與自動重錄
 recognition.onerror = function() {
-    $('#status-indicator').text("未檢測到聲音。");
-    retryFlow();
+    triggerError();
 };
 
-function retryFlow() {
+// 錯誤處理：顯示顯眼的 Alert 並倒數 3 秒補答
+function triggerError() {
     recognition.stop();
-    setTimeout(() => {
-        $('#status-indicator').text("1.5 秒後重新錄音...");
-        setTimeout(startCountdown, 1500); // 1.5秒後重啟倒數
-    }, 100);
-}
-
-// 語音播放輔助函數
-function speak(text, callback) {
-    const utter = new SpeechSynthesisUtterance(text);
-    utter.lang = 'zh-HK'; 
-    utter.rate = 1.1; // 稍微快一點比較生動
-    utter.onend = callback;
-    synth.speak(utter);
+    $('#error-overlay').css('display', 'flex').fadeOut(100).fadeIn(100); // 閃爍效果
+    
+    let retryCount = 3;
+    const retryInterval = setInterval(() => {
+        retryCount--;
+        if (retryCount > 0) {
+            $('#retry-msg').text(`請準備，${retryCount} 秒後重新補答`);
+        } else {
+            clearInterval(retryInterval);
+            $('#error-overlay').hide();
+            $('#retry-msg').text(`請準備，3 秒後重新補答`); // 重置文字
+            prepareToAnswer(); // 重新進入準備作答流程
+        }
+    }, 1000);
 }
 </script>
 
