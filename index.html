@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>常識科：語音互動溫習</title>
+    <title>常識科：智力大挑戰</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
         :root { 
-            --primary: #3498db; 
-            --accent: #f1c40f; 
-            --danger: #e74c3c; 
-            --success: #2ecc71; 
-            --bg: #f8f9fa;
+            --primary: #4a90e2; 
+            --accent: #f5a623; 
+            --danger: #ff5e57; 
+            --success: #1dd1a1; 
+            --bg: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
         }
 
         body, html { 
@@ -22,134 +22,145 @@
         }
 
         .main-container {
-            width: 90%; max-width: 700px;
-            background: white; padding: 40px;
-            border-radius: 30px;
-            box-shadow: 0 15px 45px rgba(0,0,0,0.08);
+            width: 95%; max-width: 800px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px; border-radius: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
             text-align: center;
-            min-height: 520px;
+            min-height: 550px;
             display: flex; flex-direction: column;
-            justify-content: space-between;
+            position: relative; overflow: hidden;
         }
 
-        /* 首頁 */
-        #intro-page h1 { color: var(--primary); font-size: 2.4rem; margin-top: 50px; }
-        .intro-desc { font-size: 1.2rem; color: #7f8c8d; line-height: 1.8; margin-bottom: 40px; }
+        /* 進度條 */
+        .progress-container { width: 100%; height: 10px; background: #eee; border-radius: 10px; margin-bottom: 20px; overflow: hidden; }
+        #progress-bar { width: 0%; height: 100%; background: var(--primary); transition: 0.5s; }
 
-        /* 答題頁 */
-        #quiz-page { display: none; flex-direction: column; height: 100%; }
-        #main-status { font-size: 1.5rem; font-weight: bold; color: var(--primary); margin-bottom: 10px; min-height: 35px; }
-        #timer-display { font-size: 4rem; color: var(--accent); font-weight: 900; height: 80px; }
-        #question-text { font-size: 1.5rem; line-height: 1.6; color: #2c3e50; margin: 20px 0; min-height: 90px; }
-        .blank-space { color: var(--primary); border-bottom: 3px solid var(--primary); padding: 0 10px; font-weight: bold; }
+        /* 首頁設計 */
+        #intro-page h1 { color: var(--primary); font-size: 2.8rem; text-shadow: 2px 2px 0px rgba(0,0,0,0.05); }
+        .intro-card { background: #fff; padding: 30px; border-radius: 20px; border: 2px solid #eef; margin-bottom: 30px; }
 
-        /* 提示詞庫 */
-        .hint-container { background: #f1f4f6; padding: 15px; border-radius: 15px; margin-bottom: 20px; }
-        .hint-grid { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
-        .hint-item { background: white; padding: 5px 12px; border-radius: 8px; font-size: 0.95rem; color: #555; border: 1px solid #ddd; }
+        /* 答題頁面 */
+        #quiz-page { display: none; flex-direction: column; flex-grow: 1; }
+        #main-status { font-size: 1.6rem; font-weight: 800; color: var(--primary); text-transform: uppercase; letter-spacing: 2px; }
+        #timer-display { font-size: 5rem; color: var(--accent); font-weight: 900; height: 100px; display: flex; align-items: center; justify-content: center; }
+        
+        #question-box { background: #fcfcfc; padding: 25px; border-radius: 25px; border-left: 8px solid var(--primary); margin: 20px 0; min-height: 100px; display: flex; align-items: center; justify-content: center; }
+        #question-text { font-size: 1.6rem; color: #2d3436; line-height: 1.6; }
+        .blank-space { color: var(--primary); border-bottom: 4px solid var(--primary); padding: 0 10px; font-weight: bold; min-width: 60px; display: inline-block; }
 
-        /* 按鈕樣式 */
-        .btn-group { margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee; }
-        .btn { border: none; padding: 15px 40px; border-radius: 50px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .btn-primary { background: var(--primary); color: white; box-shadow: 0 8px 15px rgba(52, 152, 219, 0.2); }
-        .btn-exit { background: #eee; color: #777; padding: 10px 30px; font-size: 0.9rem; }
-        .btn:hover { opacity: 0.9; transform: translateY(-2px); }
+        /* 詞語提示詞隨機佈局 */
+        .hint-section { margin-top: auto; padding: 20px; background: #f0f4f8; border-radius: 25px; }
+        .hint-title { font-size: 0.9rem; color: #95a5a6; margin-bottom: 15px; font-weight: bold; }
+        .hint-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+        .hint-item { background: white; padding: 10px; border-radius: 12px; font-size: 1rem; color: #555; border: 1px solid #d1d8e0; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+
+        /* 按鈕 */
+        .btn { border: none; padding: 18px 50px; border-radius: 50px; font-size: 1.3rem; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn-start { background: var(--primary); color: white; box-shadow: 0 10px 20px rgba(74, 144, 226, 0.3); }
+        .btn-exit { background: #dfe6e9; color: #636e72; font-size: 1rem; padding: 12px 30px; margin-top: 20px; align-self: center; }
+        .btn:hover { transform: scale(1.05); filter: brightness(1.1); }
 
         /* 錯誤 Overlay */
         #error-overlay {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(231, 76, 60, 0.96); z-index: 10000;
+            background: rgba(255, 94, 87, 0.98); z-index: 9999;
             flex-direction: column; align-items: center; justify-content: center;
             color: white; text-align: center;
         }
+        #error-overlay h2 { font-size: 4rem; margin-bottom: 0; }
+        #error-overlay p { font-size: 2rem; margin-top: 20px; opacity: 0.9; }
     </style>
 </head>
 <body>
 
     <div class="main-container">
+        <div class="progress-container"><div id="progress-bar"></div></div>
+
         <div id="intro-page">
-            <div>
-                <h1>常識科溫習遊戲</h1>
-                <p class="intro-desc">聆聽問題並說出正確答案。<br>題目已<b>隨機排序</b>，10 秒內沒聲音會自動重試。</p>
+            <h1>常識科大挑戰</h1>
+            <div class="intro-card">
+                <p style="font-size: 1.3rem; color: #555;">準備好測試你的常識了嗎？<br>聽清楚題目，在 <b>10 秒</b>內說出答案！</p>
             </div>
-            <button id="btn-start" class="btn btn-primary">開始挑戰</button>
+            <button id="btn-start" class="btn btn-start">立即開始</button>
         </div>
 
         <div id="quiz-page">
-            <div id="quiz-header">
-                <div id="main-status">準備中</div>
-                <div id="timer-display"></div>
+            <div id="main-status">準備就緒</div>
+            <div id="timer-display">Ready</div>
+            
+            <div id="question-box">
                 <div id="question-text">載入中...</div>
             </div>
 
-            <div class="hint-container">
-                <div class="hint-grid">
-                    <div class="hint-item">生活</div><div class="hint-item">特色</div><div class="hint-item">友好</div>
-                    <div class="hint-item">探究</div><div class="hint-item">熱身</div><div class="hint-item">愛護</div>
-                    <div class="hint-item">武器</div><div class="hint-item">樹皮</div><div class="hint-item">安全</div>
-                    <div class="hint-item">鋸子</div>
-                </div>
+            <div class="hint-section">
+                <div class="hint-title">💡 參考詞語（隨機排列）：</div>
+                <div id="hint-grid" class="hint-grid">
+                    </div>
             </div>
 
-            <div class="btn-group">
-                <button id="btn-exit" class="btn btn-exit">退出</button>
-            </div>
+            <button id="btn-exit" class="btn btn-exit">退出結束</button>
         </div>
     </div>
 
     <div id="error-overlay">
-        <h2 id="error-title" style="font-size: 3rem;">❌ 答錯了</h2>
-        <p id="retry-timer-text" style="font-size: 1.5rem;">請準備，3 秒後重新補答</p>
+        <h2 id="error-title">❌ 答錯了</h2>
+        <p id="retry-timer-text">請準備，3 秒後重新補答</p>
     </div>
 
 <script>
 $(document).ready(function() {
-    let quizData = [
-        { q: "不同的服務人員為我們提供不同的服務，為____帶來方便。", a: "生活", d: "沒錯！生活變得更方便了。" },
-        { q: "香港的社區有不同的____，例如：到沙田城門河踏單車。", a: "特色", d: "正確！每個社區都有自己的特色設施。" },
-        { q: "我們應該與鄰居建立____的關係，令生活更愉快。", a: "友好", d: "答對了！友好關係非常重要。" },
-        { q: "發明家要具備____精神、不怕困難及有創意的條件。", a: "探究", d: "厲害！探究精神是發明之母。" },
-        { q: "游泳前，我們要先做____運動才下水。", a: "熱身", d: "正確！熱身運動可以防止抽筋。" },
-        { q: "我們在體育館做運動時，應該____場館內的設施。", a: "愛護", d: "對！我們要愛護公物。" },
-        { q: "把火藥用作____會危害生命。", a: "武器", d: "沒錯。科技應用於和平用途。" },
-        { q: "蔡倫以____作為製造紙張的原料之一。", a: "樹皮", d: "正確。樹皮是造紙的重要發現。" },
-        { q: "郊遊時，我們不要擅自離隊，要注意____。", a: "安全", d: "沒錯，安全意識最重要。" },
-        { q: "魯班使用鐵片製成了____來伐木。", a: "鋸子", d: "聰明！你已經完成所有題目了。" }
+    const originalQuiz = [
+        { q: "不同的服務人員為我們提供不同的服務，為____帶來方便。", a: "生活", d: "沒錯！生活更便利了。" },
+        { q: "香港的社區有不同的____，例如：到沙田城門河踏單車。", a: "特色", d: "正確！社區特色讓環境更優美。" },
+        { q: "我們應該與鄰居建立____的關係，令生活更愉快。", a: "友好", d: "答對了！友好鄰里關係很重要。" },
+        { q: "發明家要具備____精神、不怕困難及有創意的條件。", a: "探究", d: "厲害！探究精神是發明的開始。" },
+        { q: "游泳前，我們要先做____運動才下水。", a: "熱身", d: "正確！熱身可以保護身體。" },
+        { q: "我們在體育館做運動時，應該____場館內的設施。", a: "愛護", d: "對！愛護公物是好行為。" },
+        { q: "把火藥用作____會危害生命。", a: "武器", d: "沒錯。火藥不應隨便當作武器。" },
+        { q: "蔡倫以____作為製造紙張的原料之一。", a: "樹皮", d: "正確。蔡倫改良了造紙術。" },
+        { q: "郊遊時，我們不要擅自離隊，要注意____。", a: "安全", d: "沒錯，安全第一。" },
+        { q: "魯班使用鐵片製成了____來伐木。", a: "鋸子", d: "聰明！你完成了所有隨機挑戰！" }
     ];
 
-    let currentQuestions = []; // 用於存放隨機化後的題目
+    let currentQuestions = [];
     let currentIndex = 0;
-    let silenceTimer; 
+    let silenceTimer;
     const synth = window.speechSynthesis;
     const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
     let recognition = new SpeechRecognition();
     recognition.lang = 'zh-HK';
 
-    // 隨機洗牌函式 (Fisher-Yates Shuffle)
-    function shuffleArray(array) {
-        let shuffled = [...array];
-        for (let i = shuffled.length - 1; i > 0; i--) {
+    // 洗牌函式
+    function shuffle(array) {
+        let arr = [...array];
+        for (let i = arr.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
-            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[shuffled[i]]];
-            // 修正洗牌邏輯
-            let temp = shuffled[i];
-            shuffled[i] = shuffled[j];
-            shuffled[j] = temp;
+            [arr[i], arr[j]] = [arr[j], arr[i]];
         }
-        return shuffled;
+        return arr;
     }
 
-    // 啟動按鈕
+    // 更新提示詞庫（隨機排列）
+    function updateHintGrid() {
+        const answers = originalQuiz.map(item => item.a);
+        const shuffledHints = shuffle(answers);
+        $('#hint-grid').empty();
+        shuffledHints.forEach(word => {
+            $('#hint-grid').append(`<div class="hint-item">${word}</div>`);
+        });
+    }
+
     $('#btn-start').on('click', function() {
-        // 核心修改：每次開始都隨機排列題目
-        currentQuestions = shuffleArray(quizData);
-        $('#intro-page').hide();
-        $('#quiz-page').css('display', 'flex');
+        currentQuestions = shuffle(originalQuiz); // 題目隨機
+        updateHintGrid(); // 提示詞隨機
         currentIndex = 0;
-        loadQuestion();
+        $('#intro-page').fadeOut(300, function() {
+            $('#quiz-page').css('display', 'flex').hide().fadeIn();
+            loadQuestion();
+        });
     });
 
-    // 退出按鈕
     $('#btn-exit').on('click', function() {
         resetApp();
     });
@@ -160,6 +171,7 @@ $(document).ready(function() {
         recognition.stop();
         $('#quiz-page').hide();
         $('#intro-page').show();
+        $('#progress-bar').css('width', '0%');
     }
 
     function speak(text, callback) {
@@ -171,18 +183,20 @@ $(document).ready(function() {
 
     function loadQuestion() {
         if (currentIndex >= currentQuestions.length) {
-            $('#main-status').text("🏆 溫習完成！");
-            $('#question-text').text("做得太好了！你已經隨機完成了所有題目。");
-            $('#timer-display').text("🌟");
-            speak("恭喜你，所有隨機挑戰完成。");
+            finishQuiz();
             return;
         }
 
+        // 更新進度條
+        const progress = (currentIndex / currentQuestions.length) * 100;
+        $('#progress-bar').css('width', progress + '%');
+
         const item = currentQuestions[currentIndex];
-        // 重置填充框
-        $('#question-text').html(`${currentIndex+1}. ${item.q.replace("____", "<span class='blank-space'>？</span>")}`);
-        $('#main-status').text("準備中").css("color", "var(--primary)");
-        
+        // 確保每一題重新開始時都是空的
+        $('#question-text').html(`${currentIndex + 1}. ${item.q.replace("____", "<span class='blank-space'>？</span>")}`);
+        $('#main-status').text("請聆聽題目").css("color", "var(--primary)");
+        $('#timer-display').text("🎧");
+
         speak(item.q.replace("____", "什麼"), function() {
             promptAndCount();
         });
@@ -191,86 +205,78 @@ $(document).ready(function() {
     function promptAndCount() {
         $('#main-status').text("請準備作答").css("color", "var(--accent)");
         speak("請準備作答", function() {
-            // 核心修改：作答前準備時間改為 1 秒
-            startCountdown(1);
+            // 1秒準備
+            let count = 1;
+            $('#timer-display').text(count);
+            setTimeout(() => {
+                startRecording();
+            }, 1000);
         });
     }
 
-    function startCountdown(sec) {
-        let count = sec;
-        $('#timer-display').text(count);
-        const timer = setInterval(() => {
-            count--;
-            if (count > 0) {
-                $('#timer-display').text(count);
-            } else {
-                clearInterval(timer);
-                startRecognitionProcess();
-            }
-        }, 1000);
-    }
-
-    function startRecognitionProcess() {
+    function startRecording() {
         $('#timer-display').text("🎤");
         $('#main-status').text("請說話...").css("color", "var(--success)");
-        recognition.start();
+        
+        try { recognition.start(); } catch(e) {}
 
-        // 靜音計時器：10 秒
+        // 10秒靜音重錄
         clearTimeout(silenceTimer);
         silenceTimer = setTimeout(() => {
             recognition.stop();
-            handleSilence();
-        }, 10000); 
+            showError("⌛ 偵測不到聲音");
+        }, 10000);
     }
 
     recognition.onresult = function(event) {
-        clearTimeout(silenceTimer); 
+        clearTimeout(silenceTimer);
         const result = event.results[0][0].transcript;
         const item = currentQuestions[currentIndex];
 
         if (result.includes(item.a)) {
-            $('#main-status').text("✅ 正確").css("color", "var(--success)");
-            $('#question-text').find('.blank-space').text(item.a); 
+            // 答對了
+            $('#main-status').text("✅ 太棒了！").css("color", "var(--success)");
+            $('.blank-space').text(item.a).css("color", "var(--success)");
+            
             speak(item.d, function() {
-                currentIndex++;
-                setTimeout(loadQuestion, 500);
+                currentIndex++; // 跳到下一題
+                setTimeout(loadQuestion, 800);
             });
         } else {
-            showErrorAlert("❌ 答錯了");
+            showError("❌ 答案不正確");
         }
     };
 
-    function handleSilence() {
-        $('#main-status').text("未偵測到回應...").css("color", "var(--danger)");
-        setTimeout(() => {
-            showErrorAlert("⌛ 偵測不到聲音", true);
-        }, 500); 
+    function showError(title) {
+        recognition.stop();
+        $('#error-title').text(title);
+        $('#error-overlay').css('display', 'flex').hide().fadeIn(200);
+        
+        let retryCount = 3;
+        const timer = setInterval(() => {
+            retryCount--;
+            if (retryCount > 0) {
+                $('#retry-timer-text').text(`請準備，${retryCount} 秒後重新補答`);
+            } else {
+                clearInterval(timer);
+                $('#error-overlay').fadeOut(200);
+                promptAndCount();
+            }
+        }, 1000);
+    }
+
+    function finishQuiz() {
+        $('#progress-bar').css('width', '100%');
+        $('#main-status').text("🏆 挑戰成功");
+        $('#timer-display').text("🎉");
+        $('#question-text').text("你已經完成了所有常識題目，表現優異！");
+        speak("恭喜你，溫習完成。你是常識小專家！");
     }
 
     recognition.onerror = function() {
         clearTimeout(silenceTimer);
-        showErrorAlert("⚠️ 錄音錯誤");
+        showError("⚠️ 錄音出錯");
     };
-
-    function showErrorAlert(title, isSilence = false) {
-        recognition.stop();
-        $('#error-title').text(title);
-        $('#error-overlay').css('display', 'flex');
-        
-        let timeLeft = 3;
-        $('#retry-timer-text').text(`請準備，${timeLeft} 秒後重新補答`);
-
-        const retryInt = setInterval(() => {
-            timeLeft--;
-            if (timeLeft > 0) {
-                $('#retry-timer-text').text(`請準備，${timeLeft} 秒後重新補答`);
-            } else {
-                clearInterval(retryInt);
-                $('#error-overlay').hide();
-                promptAndCount(); 
-            }
-        }, 1000);
-    }
 });
 </script>
 </body>
