@@ -3,79 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>板塊構造論 - 專業語音互動教學</title>
+    <title>常識科：多元技能評估</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
-        :root { --primary: #2c3e50; --accent: #e67e22; --danger: #c0392b; --success: #27ae60; }
-        body { font-family: '微軟正黑體', sans-serif; background: #f4f7f6; margin: 0; overflow: hidden; }
+        :root { --primary: #2980b9; --accent: #f39c12; --danger: #e74c3c; --success: #2ecc71; }
+        body { font-family: '微軟正黑體', sans-serif; background: #fdfdfd; margin: 0; overflow: hidden; }
         
         .container { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; padding: 20px; box-sizing: border-box; }
         
-        /* 教學頁面 */
-        #intro-page { max-width: 800px; background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        .content-text { line-height: 1.8; color: #444; font-size: 1.1rem; }
+        /* 教學介紹頁面 */
+        #intro-page { max-width: 800px; background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; }
+        .word-bank { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 20px 0; }
+        .word-tag { background: #eee; padding: 8px 15px; border-radius: 5px; font-weight: bold; color: #555; }
 
         /* 問答頁面 */
         #quiz-page { display: none; width: 100%; text-align: center; }
-        .q-card { background: white; padding: 40px; border-radius: 25px; display: inline-block; width: 80%; max-width: 600px; position: relative; }
+        .q-card { background: white; padding: 50px; border-radius: 25px; display: inline-block; width: 85%; max-width: 700px; box-shadow: 0 15px 40px rgba(0,0,0,0.05); }
         
-        /* 狀態提示 */
         #main-status { font-size: 2.5rem; font-weight: bold; margin-bottom: 20px; color: var(--primary); }
-        #timer-display { font-size: 5rem; color: var(--accent); font-weight: bold; height: 120px; }
-        #question-display { font-size: 1.5rem; margin: 20px 0; min-height: 60px; color: #34495e; }
-        .blank { border-bottom: 4px solid var(--accent); color: var(--accent); padding: 0 10px; font-weight: bold; }
+        #timer-display { font-size: 6rem; color: var(--accent); font-weight: bold; height: 130px; line-height: 130px; }
+        #question-display { font-size: 1.8rem; margin: 30px 0; color: #2c3e50; line-height: 1.5; }
+        .blank { border-bottom: 4px solid var(--primary); color: var(--accent); padding: 0 15px; min-width: 100px; display: inline-block; }
 
-        /* 強烈錯誤提示 Overlay */
+        /* 錯誤補答強烈 Alert Overlay */
         #error-overlay {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(192, 57, 43, 0.9); z-index: 100;
+            background: rgba(231, 76, 60, 0.95); z-index: 1000;
             flex-direction: column; align-items: center; justify-content: center;
             color: white; text-align: center;
         }
-        #error-overlay h2 { font-size: 4rem; margin: 0; }
-        #error-overlay p { font-size: 2rem; }
+        #error-overlay .icon { font-size: 8rem; margin-bottom: 20px; }
+        #error-overlay h2 { font-size: 3.5rem; margin: 0; }
+        #error-overlay p { font-size: 2rem; margin-top: 20px; }
 
-        .btn { background: var(--primary); color: white; border: none; padding: 15px 40px; border-radius: 50px; cursor: pointer; font-size: 1.2rem; transition: 0.3s; }
-        .btn:hover { transform: scale(1.05); background: #34495e; }
+        .btn { background: var(--primary); color: white; border: none; padding: 18px 50px; border-radius: 50px; cursor: pointer; font-size: 1.4rem; transition: 0.3s; margin-top: 20px; }
+        .btn:hover { background: #1c5982; transform: translateY(-2px); }
     </style>
 </head>
 <body>
 
 <div class="container" id="intro-page">
-    <h1>🌍 板塊構造論：核心知識</h1>
-    <div class="content-text">
-        <p>地球的<b>岩石圈</b>是由板塊拼合而成，下方是具塑性的<b>軟流圈</b>。板塊邊界分為三類：</p>
-        <ul>
-            <li><b>聚合性邊界</b>：互相擠壓，形成<b>海溝</b>或褶曲山脈。</li>
-            <li><b>張裂性邊界</b>：互相分離，形成<b>中洋脊</b>或裂谷。</li>
-            <li><b>錯動性邊界</b>：水平滑動，發生轉形斷層。</li>
-        </ul>
-        <p>板塊運動的動力來自於<b>地函對流</b>。</p>
+    <h1 style="color:var(--primary)">📋 多元技能評估：詞語填空</h1>
+    <p>請先溫習以下的詞語庫，準備好後我們將進行語音測驗：</p>
+    <div class="word-bank">
+        <span class="word-tag">生活</span> <span class="word-tag">特色</span> <span class="word-tag">友好</span> 
+        <span class="word-tag">探究</span> <span class="word-tag">熱身</span> <span class="word-tag">愛護</span> 
+        <span class="word-tag">武器</span> <span class="word-tag">樹皮</span> <span class="word-tag">安全</span> 
+        <span class="word-tag">鋸子</span>
     </div>
-    <button class="btn" onclick="goToQuiz()">準備好，開始測驗！</button>
+    <button class="btn" onclick="goToQuiz()">我準備好了，開始測驗</button>
 </div>
 
 <div class="container" id="quiz-page">
     <div class="q-card">
-        <div id="main-status">等待中</div>
+        <div id="main-status">等待指令</div>
         <div id="timer-display"></div>
         <div id="question-display">載入題目中...</div>
-        <div id="live-transcript" style="color: #95a5a6; font-style: italic;"></div>
+        <div id="live-transcript" style="color: #bdc3c7; font-size: 1.2rem;"></div>
     </div>
 </div>
 
 <div id="error-overlay">
-    <h2>❌ 回答不正確</h2>
+    <div class="icon">⚠️</div>
+    <h2>回答不正確</h2>
     <p id="retry-msg">請準備，3 秒後重新補答</p>
 </div>
 
 <script>
+// 根據圖片內容更新的題目數據庫
 const quizData = [
-    { q: "地球的最外層稱為____圈，是由板塊組成的。", a: "岩石", d: "岩石圈是由地殼和上地函頂部組成的剛性外殼。" },
-    { q: "板塊是在哪一層構造之上進行移動的？答案是____圈。", a: "軟流", d: "軟流圈位於岩石圈下方，處於熔融狀態，方便板塊滑動。" },
-    { q: "兩板塊分離，形成新地殼的邊界稱為____型邊界。", a: "張裂", d: "沒錯，中洋脊就是典型的張裂型邊界。" },
-    { q: "板塊移動的主要原因是因為地函產生的____現象。", a: "對流", d: "地函對流產生的熱能推動了上方板塊的運動。" },
-    { q: "法國學者勒皮雄在1968年將全球劃分為____大板塊。", a: "六", d: "這六大板塊包括歐亞、非洲、美洲、太平洋、印度洋及南極洲板塊。" }
+    { q: "不同的服務人員為我們提供不同的服務，為____帶來方便。", a: "生活", d: "沒錯，不同的服務人員讓我們的生活更輕鬆便利。" },
+    { q: "香港的社區有不同的____，例如：我們可到沙田城門河兩岸踏單車。", a: "特色", d: "正確。每個社區都有自己獨特的特色和設施。" },
+    { q: "我們應該與鄰居建立____的關係，令生活更愉快。", a: "友好", d: "對。與鄰居保持友好關係，社區會更和諧。" },
+    { q: "發明家要具備____精神、不怕困難及有創意的條件。", a: "探究", d: "非常棒。探究精神是發明新事物的基礎。" },
+    { q: "游泳前，我們要先做____運動才下水。", a: "熱身", d: "正確。熱身可以防止運動時受傷。" },
+    { q: "我們在體育館做運動時，應該____場館內的設施。", a: "愛護", d: "沒錯。公共設施需要大家共同愛護。" },
+    { q: "把火藥用作____會危害生命。", a: "武器", d: "正確。我們應將科技用於改善生活，而非製造武器。" },
+    { q: "蔡倫以____作為製造紙張的原料之一。", a: "樹皮", d: "對了。蔡倫改良了造紙術，樹皮是重要原料。" },
+    { q: "郊遊時，我們不要擅自離隊，要注意____。", a: "安全", d: "正確。安全第一，郊遊時要緊隨隊伍。" },
+    { q: "魯班使用鐵片製成了____來伐木。", a: "鋸子", d: "聰明！相傳魯班是受到絲茅草的啟發而發明了鋸子。" }
 ];
 
 let currentIndex = 0;
@@ -89,7 +95,6 @@ recognition.interimResults = false;
 function speak(text, callback) {
     const utter = new SpeechSynthesisUtterance(text);
     utter.lang = 'zh-HK';
-    utter.rate = 1.0;
     utter.onend = callback;
     synth.speak(utter);
 }
@@ -102,25 +107,25 @@ function goToQuiz() {
 
 function loadQuestion() {
     if (currentIndex >= quizData.length) {
-        $('#main-status').text("🏆 挑戰完成！");
-        $('#question-display').text("你已經掌握了板塊構造論的重點。");
-        speak("恭喜你完成所有題目！");
+        $('#main-status').text("🏆 挑戰完成");
+        $('#question-display').html("你已經完成了所有題目，做得很好！");
+        speak("恭喜你！你已經完成了所有題目！");
         return;
     }
 
     const item = quizData[currentIndex];
-    $('#question-display').html(item.q.replace("____", "<span class='blank'>？</span>"));
+    $('#question-display').html(`${currentIndex + 1}. ${item.q.replace("____", "<span class='blank'>？</span>")}`);
     $('#live-transcript').text("");
     
-    // 先讀出題目
+    // 朗讀題目（將底線讀為「什麼」）
     speak(item.q.replace("____", "什麼"), function() {
         prepareToAnswer();
     });
 }
 
-// 核心流程：提示 -> 倒數 -> 錄音
 function prepareToAnswer() {
-    $('#main-status').text("請準備作答");
+    $('#main-status').text("請準備作答").css("color", "var(--accent)");
+    // 語音提示
     speak("請準備作答", function() {
         startCountdown(3);
     });
@@ -137,54 +142,50 @@ function startCountdown(seconds) {
         } else {
             clearInterval(interval);
             $('#timer-display').text("🎤");
-            $('#main-status').text("請說話...");
+            $('#main-status').text("請說話...").css("color", "var(--success)");
             recognition.start();
         }
     }, 1000);
 }
 
-// 語音識別結果
 recognition.onresult = function(event) {
     const userAnswer = event.results[0][0].transcript;
     const item = quizData[currentIndex];
-    $('#live-transcript').text("你說的是：" + userAnswer);
+    $('#live-transcript').text("偵測到：" + userAnswer);
 
+    // 比對答案（包含關鍵字即可）
     if (userAnswer.includes(item.a)) {
-        // 答對邏輯
         $('#main-status').text("✅ 正確！").css("color", "var(--success)");
+        $('#timer-display').text("✨");
         speak(item.d, function() {
             currentIndex++;
-            $('#main-status').css("color", "var(--primary)");
             setTimeout(loadQuestion, 500);
         });
     } else {
-        triggerError();
+        triggerErrorAlert();
     }
 };
 
 recognition.onerror = function() {
-    triggerError();
+    triggerErrorAlert();
 };
 
-// 錯誤處理：顯示顯眼的 Alert 並倒數 3 秒補答
-function triggerError() {
+// 顯眼的錯誤 Alert 邏輯
+function triggerErrorAlert() {
     recognition.stop();
-    $('#error-overlay').css('display', 'flex').fadeOut(100).fadeIn(100); // 閃爍效果
+    // 顯示全螢幕紅色 Overlay
+    $('#error-overlay').css('display', 'flex');
     
-    let retryCount = 3;
+    let retryTimer = 3;
+    $('#retry-msg').text(`請準備，${retryTimer} 秒後重新補答`);
+
     const retryInterval = setInterval(() => {
-        retryCount--;
-        if (retryCount > 0) {
-            $('#retry-msg').text(`請準備，${retryCount} 秒後重新補答`);
+        retryTimer--;
+        if (retryTimer > 0) {
+            $('#retry-msg').text(`請準備，${retryTimer} 秒後重新補答`);
         } else {
             clearInterval(retryInterval);
             $('#error-overlay').hide();
-            $('#retry-msg').text(`請準備，3 秒後重新補答`); // 重置文字
-            prepareToAnswer(); // 重新進入準備作答流程
+            prepareToAnswer(); // 回到「請準備作答」流程
         }
-    }, 1000);
-}
-</script>
-
-</body>
-</html>
+    }, 100
