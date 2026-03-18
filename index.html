@@ -1,696 +1,131 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- 突破圖片防盜連的核心代碼，保證 GitHub Pages 圖片正常顯示 -->
-    <meta name="referrer" content="no-referrer">
-    
-    <title>China's Wonders Explorer</title>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+    <title>互動語音學習 App</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
-        :root {
-            --primary: #FF6B6B;
-            --secondary: #4ECDC4;
-            --accent: #FFE66D;
-            --dark: #2C3E50;
-            --light: #F7FFF7;
-            --success: #27ae60;
-            --disabled: #bdc3c7;
-            --bg-gradient: linear-gradient(135deg, #ffc39c 0%, #ffb73d 100%);
-        }
-
-        * {
-            box-sizing: border-box;
-            font-family: 'Nunito', sans-serif;
-        }
-
-        body {
-            background-image: var(--bg-gradient);
-            margin: 0;
-            padding: 0;
-            color: var(--dark);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        /* ----- 頁面切換控制 ----- */
-        .page {
-            display: none;
-            width: 100%;
-            max-width: 900px;
-            min-height: 100vh;
-            padding: 20px;
-            flex-direction: column;
-            align-items: center;
-            animation: fadeIn 0.5s ease-in-out;
-        }
-
-        .page.active {
-            display: flex;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* ----- 首頁 (Home Page) ----- */
-        .home-container {
-            background: white;
-            border-radius: 30px;
-            padding: 40px;
-            text-align: center;
-            box-shadow: 0 15px 25px rgba(0,0,0,0.1);
-            border: 5px solid var(--primary);
-            margin-top: 5vh;
-            width: 90%;
-        }
-
-        .home-title {
-            color: var(--primary);
-            font-size: 2.8rem;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        /* ===== 修改: 讓標題和圖片分行、置中、並設定自適應放大 ===== */
-        .hero-icon {
-            font-size: 3rem; 
-            margin-bottom: 15px;
-            animation: float 3s ease-in-out infinite;
-            display: flex;
-            flex-direction: column; /* 垂直排列，讓圖片開新一行 */
-            align-items: center;    /* 完美置中 */
-            justify-content: center;
-            gap: 20px; /* 文字和圖片的間距 */
-            color: #FF8C00;
-            font-weight: 900;
-            width: 100%;
-        }
-
-        .hero-icon img {
-            width: 100%;       /* 自動符合瀏覽器大小 */
-            max-width: 450px;  /* 放大一點，並設定最大寬度避免在電腦螢幕上過大 */
-            height: auto;      /* 保持圖片比例不變形 */
-            border-radius: 15px; /* 加上微圓角讓圖片更好看（選配）*/
-        }
-
-        /* ===== 創建一個橙色加底線的 CSS 類別 ===== */
-        .highlight-orange {
-            color: #FF8C00;
-            text-decoration: underline;
-        }
-
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-15px); }
-            100% { transform: translateY(0px); }
-        }
-
-        /* ----- 按鈕樣式 ----- */
-        .btn {
-            background: var(--secondary);
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            border-radius: 30px;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 5px 10px rgba(0,0,0,0.15);
-            margin: 10px;
-        }
-
-        .btn:hover {
-            transform: translateY(-3px);
-            background: #3eb5ac;
-            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
-        }
-
-        .btn-start { background: var(--primary); font-size: 1.5rem; padding: 15px 40px; }
-        .btn-start:hover { background: #ff4757; }
-        .btn-back { background: #95a5a6; }
-        .btn-back:hover { background: #7f8c8d; }
-        .btn.manmade { background: #FF9F1C; }
-        .btn.natural { background: #2EC4B6; }
-
-        /* ----- 地圖頁面 (Map Page) ----- */
-        header {
-            text-align: center;
-            background: white;
-            padding: 15px 30px;
-            border-radius: 20px;
-            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-            width: 100%;
-            border: 4px solid var(--secondary);
-        }
-
-        .map-card {
-            background: white;
-            border-radius: 20px;
-            padding: 20px;
-            width: 100%;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
-            border: 4px solid var(--dark);
-            position: relative;
-        }
-
-        .map-title {
-            text-align: center;
-            color: var(--dark);
-            margin: 0 0 15px 0;
-            font-size: 1.6rem;
-            text-transform: uppercase;
-        }
-
-        /* ===== 進度選單 (Mission Menu) ===== */
-        .mission-menu {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .menu-item {
-            background: var(--light);
-            border: 2px solid var(--secondary);
-            border-radius: 12px;
-            padding: 10px 12px;
-            font-size: 0.95rem;
-            font-weight: bold;
-            text-align: left;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .menu-item:hover {
-            background: #e0f7fa;
-            transform: translateY(-2px);
-        }
-
-        /* 答對後的選單狀態 (灰色 + Disable) */
-        .menu-item.completed {
-            background: #ecf0f1;
-            border-color: var(--disabled);
-            color: #7f8c8d;
-            cursor: not-allowed;
-            pointer-events: none; /* 讓按鈕無法再點擊 */
-            transform: none;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .menu-item .tick {
-            display: none;
-            font-size: 1.1rem;
-        }
-
-        .menu-item.completed .tick {
-            display: block;
-            color: var(--success);
-        }
-
-        /* ===== 真實中國地圖背景 ===== */
-        .map-wrapper {
-            position: relative;
-            width: 100%;
-            padding-top: 73%;
-            background-image: url('src/map.jpg');
-            background-size: cover;
-            background-position: center;
-            border-radius: 15px;
-            border: 2px solid #b2bec3;
-            overflow: hidden;
-        }
-
-        /* ===== 基本款水滴地標標記 (Basic Drop Pin) ===== */
-        .pin {
-            position: absolute;
-            width: 36px;
-            height: 36px;
-            background-color: var(--primary);
-            border-radius: 50% 50% 50% 0;
-            transform: rotate(-45deg);
-            cursor: pointer;
-            box-shadow: -4px 4px 6px rgba(0,0,0,0.4);
-            transition: all 0.3s;
-            animation: bounce 2s infinite;
-            z-index: 2;
-        }
-
-        /* 原本的小白點 */
-        .pin::after {
-            content: '';
-            position: absolute;
-            width: 14px;
-            height: 14px;
-            background: white;
-            border-radius: 50%;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-        .pin:hover {
-            transform: rotate(-45deg) scale(1.2);
-            background-color: var(--accent);
-            z-index: 5;
-        }
-
-        /* 答對後的地標狀態 (灰色 + 打勾 + Disable) */
-        .pin.completed {
-            background-color: var(--disabled);
-            animation: none;
-            cursor: not-allowed;
-            pointer-events: none; /* 無法再點擊 */
-            box-shadow: none;
-        }
-
-        .pin.completed::after {
-            content: '✔';
-            color: var(--success);
-            font-size: 16px;
-            font-weight: bold;
-            background: transparent; /* 去除白底 */
-            transform: translate(-50%, -50%) rotate(45deg); /* 將文字轉正 */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateY(0) rotate(-45deg); }
-            40% { transform: translateY(-12px) rotate(-45deg); }
-            60% { transform: translateY(-6px) rotate(-45deg); }
-        }
-
-        /* ----- 底部控制列 ----- */
-        .bottom-bar {
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            margin-top: 20px;
-            padding-bottom: 20px;
-        }
-
-        /* ----- 任務視窗 (Modal) ----- */
-        .modal {
-            display: none;
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255,255,255,0.96);
-            z-index: 10;
-            padding: 20px;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            text-align: center;
-            border-radius: 15px;
-            overflow-y: auto;
-        }
-
-        .landmark-img {
-            width: 90%;
-            max-width: 450px;
-            height: auto;
-            object-fit: cover; 
-            border-radius: 15px;
-            border: 5px solid var(--accent);
-            margin-top: 10px;
-            margin-bottom: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-
-        .question-box {
-            background: var(--light);
-            padding: 15px;
-            border-radius: 15px;
-            width: 90%;
-            max-width: 500px;
-            border: 3px solid var(--secondary);
-            margin-bottom: 15px;
-        }
-
-        input[type="text"] {
-            padding: 10px 15px;
-            font-size: 1.1rem;
-            border: 2px solid var(--secondary);
-            border-radius: 20px;
-            width: 80%;
-            margin-bottom: 10px;
-            outline: none;
-            text-align: center;
-        }
-
-        .error-msg {
-            color: var(--primary);
-            font-weight: bold;
-            margin-top: 5px;
-            min-height: 24px;
-        }
-
-        .pride-fact {
-            background: #FFF3CD;
-            color: #856404;
-            padding: 15px;
-            border-radius: 15px;
-            border: 2px dashed #FFEEBA;
-            margin-top: 15px;
-            font-size: 1.1rem;
-        }
-
-        .modal-footer {
-            margin-top: auto;
-            padding-top: 10px;
-            padding-bottom: 10px;
-            width: 100%;
-        }
-
-        /* ----- 結業勳章 (Badge) ----- */
-        .badge-modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(0,0,0,0.85);
-            z-index: 100;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-        }
-
-        .badge-content {
-            background: white;
-            padding: 40px;
-            border-radius: 30px;
-            max-width: 500px;
-            animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        .badge-content h2 { color: var(--primary); font-size: 2.2rem; margin-top:0;}
-        .badge-icon { font-size: 5rem; margin: 10px 0; }
-
-        @keyframes popIn {
-            0% { transform: scale(0); }
-            100% { transform: scale(1); }
-        }
-
-        .hidden { display: none !important; }
+        body { font-family: '微軟正黑體', sans-serif; background: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 90%; max-width: 500px; text-align: center; }
+        h1 { color: #2c3e50; font-size: 1.5rem; }
+        #question-box { margin: 20px 0; min-height: 80px; font-size: 1.2rem; color: #34495e; font-weight: bold; }
+        #status { color: #e74c3c; font-weight: bold; margin-bottom: 10px; height: 24px; }
+        #result { margin-top: 15px; font-size: 1.1rem; min-height: 30px; }
+        .btn { background: #3498db; color: white; border: none; padding: 12px 30px; border-radius: 25px; cursor: pointer; font-size: 1rem; transition: 0.3s; }
+        .btn:hover { background: #2980b9; }
+        .btn:disabled { background: #bdc3c7; cursor: not-allowed; }
+        .correct { color: #27ae60; }
+        .wrong { color: #c0392b; }
     </style>
 </head>
 <body>
 
-    <!-- ================= 首頁 (Home Page) ================= -->
-    <div id="homePage" class="page active">
-        <div class="home-container">
-            <!-- 已經加入 flex-direction: column 讓標題和圖片分開同行並置中 -->
-            <div class="hero-icon">
-                China's Hidden Wonders
-                <img src="src/boy-girl_.jpg" alt="Icon">
-            </div>
-            <h1 class="home-title"></h1>
-            
-            <p style="font-size: 1.2rem; color: #555; margin-bottom: 30px;">
-               <b> Welcome, Explorer! 🌏</b> 
-               <b>I have hidden <span class="highlight-orange">6 wonders</span> on the map of <span class="highlight-orange">China</span>. </b>
-               <b>Tell me which one you want to find first!</b>
-            </p>
-            <button class="btn btn-start" onclick="goToMap()">Start Exploring! 🚀</button>
-        </div>
-    </div>
+<div class="card">
+    <h1>🌍 知識問答大挑戰</h1>
+    <div id="status">準備就緒</div>
+    <div id="question-box">點擊下方按鈕開始學習</div>
+    <div id="result"></div>
+    <button id="start-btn" class="btn">開始回答</button>
+</div>
 
-    <!-- ================= 地圖頁面 (Map Page) ================= -->
-    <div id="mapPage" class="page">
-        <header>
-            <h1 style="color: var(--primary); margin: 0 0 10px 0;">China's Wonders Explorer</h1>
-            <div class="teacher-msg" id="teacherMsg">
-                "Welcome, Explorer! 🗺️ Check the menu below and find them all!"
-            </div>
-        </header>
+<script>
+$(document).ready(function() {
+    // 1. 定義問題與答案數據
+    const quizData = [
+        { cat: "地理", q: "世界上最長的河流是哪一條？", a: "尼羅河" },
+        { cat: "藝術", q: "經典畫作《蒙娜麗莎》是由誰繪製的？", a: "達芬奇" },
+        { cat: "科技", q: "韓國最大的科技公司是哪一家？", a: "三星" },
+        { cat: "科學", q: "水的化學符號是什麼？", a: "H2O" },
+        { cat: "人體", q: "人體最大的器官是什麼？", a: "皮膚" },
+        { cat: "時間", q: "一年（非閏年）共有多少天？", a: "365" },
+        { cat: "生活", q: "由冰塊蓋成的房子稱為什麼？", a: "雪屋" },
+        { cat: "數學", q: "64 的平方根是多少？", a: "8" },
+        { cat: "腦筋急轉彎", q: "哪一個月有 28 天？", a: "每個月" }
+    ];
 
-        <div class="map-card">
-            <h3 class="map-title">📍 Mission Menu</h3>
-            
-            <!-- 進度選單 (JavaScript 會自動填入) -->
-            <div class="mission-menu" id="missionMenu"></div>
-            
-            <div class="map-wrapper" id="mapWrapper">
-                <!-- 基本款地標圖標將自動載入到這裡 -->
-                
-                <!-- 任務互動彈出視窗 -->
-                <div class="modal" id="interactionModal">
-                    <h2 id="lmTitle" style="color: var(--dark); margin: 0 0 5px 0;">Landmark Name</h2>
-                    
-                    <!-- 這裡會顯示高清圖片 -->
-                    <img id="lmImage" class="landmark-img" src="" alt="Landmark">
-                    
-                    <!-- 步驟 1: 自然還是人造 -->
-                    <div class="question-box" id="step1">
-                        <p style="font-size: 1.1rem; margin-top:5px;">Is this landmark <strong>Man-made</strong> or <strong>Natural</strong>?</p>
-                        <button class="btn manmade" onclick="checkType('man-made')">Man-made</button>
-                        <button class="btn natural" onclick="checkType('natural')">Natural</button>
-                        <div class="error-msg" id="typeError"></div>
-                    </div>
+    let currentIndex = 0;
 
-                    <!-- 步驟 2: 英文問句 -->
-                    <div class="question-box hidden" id="step2">
-                        <p style="font-size: 1.1rem;">Great! Now, ask me about its size. <br><small>(Hint: Type "How long is it?" or "How high is it?")</small></p>
-                        <input type="text" id="questionInput" placeholder="Type your question here...">
-                        <br>
-                        <button class="btn" style="background: var(--primary);" onclick="checkQuestion()">Ask Teacher 🙋</button>
-                        <div class="error-msg" id="questionError"></div>
-                    </div>
+    // 2. 初始化語音合成 (TTS) 與 語音識別 (STT)
+    const synth = window.speechSynthesis;
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
 
-                    <!-- 步驟 3: 答案與價值觀教育 -->
-                    <div class="question-box hidden" id="step3">
-                        <h3 style="color: var(--success); font-size: 1.3rem; margin-top: 0;" id="answerText">Answer</h3>
-                        <div class="pride-fact" id="prideFact">
-                            🌟 <strong>Pride Fact:</strong> <br><span id="factText"></span>
-                        </div>
-                    </div>
+    recognition.lang = 'zh-HK'; // 可改為 'zh-CN' 或 'zh-TW'
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
 
-                    <div class="modal-footer">
-                        <button class="btn btn-back" onclick="closeModal()">⬅️ Back to Map</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+    // 3. 播放語音函數
+    function speak(text, callback) {
+        const utter = new SpeechSynthesisUtterance(text);
+        utter.lang = 'zh-HK';
+        utter.onend = callback;
+        synth.speak(utter);
+    }
 
-        <div class="bottom-bar">
-            <button class="btn btn-back" onclick="goToHome()">🏠 Exit / Back to Home</button>
-        </div>
-    </div>
+    // 4. 開始流程
+    $('#start-btn').click(function() {
+        startQuiz();
+    });
 
-    <!-- ================= 結業勳章 (Badge Modal) ================= -->
-    <div class="badge-modal" id="badgeModal">
-        <div class="badge-content">
-            <div class="badge-icon">🏅</div>
-            <h2>Explorer Badge Unlocked!</h2>
-            <p style="font-size: 1.3rem; font-weight: bold; color: #333;">Proud Discoverer of China’s Wonders!</p>
-            <p>Amazing job! You have explored all 6 landmarks and asked perfect English questions!</p>
-            <button class="btn btn-start" style="margin-top: 20px;" onclick="location.reload()">Play Again 🔄</button>
-        </div>
-    </div>
-
-    <!-- ================= JavaScript 邏輯 ================= -->
-    <script>
-        // 資料庫：完全還原原始文字！圖片使用最標準的維基圖片直連 (保證顯示)
-        const landmarks =[
-            {
-                id: 'great-wall',
-                name: 'The Great Wall',
-                type: 'man-made',
-                measureType: 'length',
-                answer: 'It is 21,196 km long!',
-                fact: 'It is a mighty symbol of unity and history.',
-                img: 'https://upload.wikimedia.org/wikipedia/commons/2/23/The_Great_Wall_of_China_at_Jinshanling-edit.jpg',
-                top: '35%', left: '71%' 
-            },
-            {
-                id: 'yangtze-river',
-                name: 'The Yangtze River',
-                type: 'natural',
-                measureType: 'length',
-                answer: 'It is 6,300 km long!',
-                fact: 'It is the mother river of China.',
-                img: 'https://www.chinahighlights.com/image/yangtzeriver/index/yangtze-overview.jpg',
-                top: '58%', left: '65%'
-            },
-            {
-                id: 'everest',
-                name: 'Mount Everest',
-                type: 'natural',
-                measureType: 'height',
-                answer: 'It is 8,848.86 m high!',
-                fact: 'It is the world’s highest peak.',
-                img: 'https://upload.wikimedia.org/wikipedia/commons/e/e7/Everest_North_Face_toward_Base_Camp_Tibet_Luca_Galuzzi_2006.jpg',
-                top: '65%', left: '19%'
-            },
-            {
-                id: 'shanghai-tower',
-                name: 'The Shanghai Tower',
-                type: 'man-made',
-                measureType: 'height',
-                answer: 'It is 632 m high!',
-                fact: 'It is a symbol of modern China.',
-                img: 'https://tallslimtees.com/cdn/shop/articles/shanghai_tower.jpg',
-                top: '57%', left: '81%'
-            },
-            {
-                id: 'leshan-buddha',
-                name: 'The Leshan Giant Buddha',
-                type: 'man-made',
-                measureType: 'height',
-                answer: 'It is 71 m high!',
-                fact: 'It is a marvel of ancient art.',
-                img: 'https://chinaexplorertour.com/wp-content/uploads/2025/12/e3ae1b1e2b89450696f8d35a879b369e.jpg',
-                top: '62%', left: '50%'
-            },
-            {
-                id: 'hzmb-bridge',
-                name: 'The Hong Kong-Zhuhai-Macao Bridge',
-                type: 'man-made',
-                measureType: 'length',
-                answer: 'It is 55 km long!',
-                fact: 'It is the world\'s longest sea-crossing bridge.',
-                img: 'https://macaomagazine.net/wp-content/uploads/2020/01/272738315_8-copy-1024x1005-590x580.jpg',
-                top: '82%', left: '72%'
-            }
-        ];
-
-        let currentLandmark = null;
-        let completedCount = 0;
-
-        function goToMap() {
-            document.getElementById('homePage').classList.remove('active');
-            document.getElementById('mapPage').classList.add('active');
+    function startQuiz() {
+        if (currentIndex >= quizData.length) {
+            $('#question-box').text("恭喜！你已完成所有題目！");
+            speak("恭喜！你已完成所有題目！");
+            currentIndex = 0;
+            return;
         }
 
-        function goToHome() {
-            document.getElementById('mapPage').classList.remove('active');
-            document.getElementById('homePage').classList.add('active');
-        }
-
-        // 初始化：同時生成「進度選單」和「基本款水滴圖標」
-        const menuWrapper = document.getElementById('missionMenu');
-        const mapWrapper = document.getElementById('mapWrapper');
-
-        landmarks.forEach(lm => {
-            // 1. 生成上方選單按鈕 (原汁原味的名稱)
-            const menuItem = document.createElement('div');
-            menuItem.className = 'menu-item';
-            menuItem.id = `menu-${lm.id}`;
-            menuItem.innerHTML = `<span>${lm.name}</span> <span class="tick">✅</span>`;
-            menuItem.onclick = () => openModal(lm);
-            menuWrapper.appendChild(menuItem);
-
-            // 2. 生成地圖上的基本款 PIN
-            const pin = document.createElement('div');
-            pin.className = 'pin';
-            pin.id = `pin-${lm.id}`;
-            pin.style.top = lm.top;
-            pin.style.left = lm.left;
-            pin.title = lm.name;
-            pin.onclick = () => openModal(lm);
-            mapWrapper.appendChild(pin);
+        let currentQ = quizData[currentIndex];
+        $('#question-box').text(`[${currentQ.cat}] ${currentQ.q}`);
+        $('#result').text("");
+        $('#start-btn').prop('disabled', true);
+        
+        // 先讀出問題，讀完後啟動麥克風
+        speak(currentQ.q, function() {
+            startListening();
         });
+    }
 
-        function openModal(landmark) {
-            currentLandmark = landmark;
-            
-            // 使用原本設定的名稱
-            document.getElementById('lmImage').src = landmark.img;
-            document.getElementById('lmTitle').innerText = landmark.name;
-            
-            document.getElementById('step1').classList.remove('hidden');
-            document.getElementById('step2').classList.add('hidden');
-            document.getElementById('step3').classList.add('hidden');
-            
-            document.getElementById('typeError').innerText = "";
-            document.getElementById('questionError').innerText = "";
-            document.getElementById('questionInput').value = "";
-            
-            document.getElementById('interactionModal').style.display = 'flex';
+    // 5. 啟動麥克風聽取回答
+    function startListening() {
+        $('#status').text("正在聽取你的回答...");
+        recognition.start();
+    }
+
+    // 6. 語音識別結果處理
+    recognition.onresult = function(event) {
+        const userAnswer = event.results[0][0].transcript;
+        const correctAnswer = quizData[currentIndex].a;
+        
+        $('#status').text("分析中...");
+        
+        // 簡單的比對邏輯 (判斷是否包含關鍵字)
+        if (userAnswer.includes(correctAnswer) || (correctAnswer === "H2O" && userAnswer.toLowerCase().includes("h2o"))) {
+            $('#result').html(`<span class="correct">正確！你說的是：${userAnswer}</span>`);
+            speak("答對了，太棒了！", function() {
+                currentIndex++;
+                setTimeout(startQuiz, 1000);
+            });
+        } else {
+            $('#result').html(`<span class="wrong">可惜！你說的是：${userAnswer}，正確答案是：${correctAnswer}</span>`);
+            speak("不太正確喔，再試試看吧。", function() {
+                $('#start-btn').prop('disabled', false).text("重試這一題");
+            });
         }
+    };
 
-        function closeModal() {
-            document.getElementById('interactionModal').style.display = 'none';
-        }
+    recognition.onspeechend = function() {
+        recognition.stop();
+        $('#status').text("準備就緒");
+    };
 
-        function checkType(selectedType) {
-            if(selectedType === currentLandmark.type) {
-                document.getElementById('step1').classList.add('hidden');
-                document.getElementById('step2').classList.remove('hidden');
-                document.getElementById('questionInput').focus();
-            } else {
-                document.getElementById('typeError').innerText = "Oops! That's not right. Try again!";
-            }
-        }
+    recognition.onerror = function(event) {
+        $('#status').text("錯誤: " + event.error);
+        $('#start-btn').prop('disabled', false);
+    };
+});
+</script>
 
-        function checkQuestion() {
-            const inputField = document.getElementById('questionInput');
-            let q = inputField.value.toLowerCase().trim();
-            const errorBox = document.getElementById('questionError');
-            
-            if(q === "") {
-                errorBox.innerText = "Please type a question!";
-                return;
-            }
-
-            if(currentLandmark.measureType === 'length') {
-                if(q.includes('how high') || q.includes('how tall')) {
-                    errorBox.innerText = "For rivers, walls, or bridges, we ask 'How long'. Try again!";
-                    return;
-                } else if(q.includes('how long')) {
-                    showSuccess();
-                } else {
-                    errorBox.innerText = "Please start your question with 'How long...'";
-                }
-            } else if(currentLandmark.measureType === 'height') {
-                if(q.includes('how long')) {
-                    errorBox.innerText = "For mountains, towers, or statues, we ask 'How high' or 'How tall'. Try again!";
-                    return;
-                } else if(q.includes('how high') || q.includes('how tall')) {
-                    showSuccess();
-                } else {
-                    errorBox.innerText = "Please start your question with 'How high...' or 'How tall...'";
-                }
-            }
-        }
-
-        function showSuccess() {
-            document.getElementById('step2').classList.add('hidden');
-            document.getElementById('step3').classList.remove('hidden');
-            
-            document.getElementById('answerText').innerText = currentLandmark.answer;
-            document.getElementById('factText').innerText = currentLandmark.fact;
-
-            // --- 重點更新：標記為已完成 (變灰 Disable & 打勾 Tick) ---
-            const pin = document.getElementById(`pin-${currentLandmark.id}`);
-            const menuItem = document.getElementById(`menu-${currentLandmark.id}`);
-            
-            // 加上 completed class，CSS 會自動處理灰色、顯示綠色勾勾、並無法再點擊
-            if (!pin.classList.contains('completed')) {
-                pin.classList.add('completed');
-                menuItem.classList.add('completed');
-                completedCount++;
-            }
-            
-            document.getElementById('teacherMsg').innerText = `Great job! You have found ${completedCount} out of 6 wonders.`;
-
-            if(completedCount === landmarks.length) {
-                setTimeout(() => {
-                    document.getElementById('badgeModal').style.display = 'flex';
-                }, 1000);
-            }
-        }
-    </script>
 </body>
 </html>
