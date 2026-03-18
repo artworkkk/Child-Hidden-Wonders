@@ -3,128 +3,165 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>互動語音學習 App</title>
+    <title>板塊構造論 - 語音互動教學</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
-        body { font-family: '微軟正黑體', sans-serif; background: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .card { background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 90%; max-width: 500px; text-align: center; }
-        h1 { color: #2c3e50; font-size: 1.5rem; }
-        #question-box { margin: 20px 0; min-height: 80px; font-size: 1.2rem; color: #34495e; font-weight: bold; }
-        #status { color: #e74c3c; font-weight: bold; margin-bottom: 10px; height: 24px; }
-        #result { margin-top: 15px; font-size: 1.1rem; min-height: 30px; }
-        .btn { background: #3498db; color: white; border: none; padding: 12px 30px; border-radius: 25px; cursor: pointer; font-size: 1rem; transition: 0.3s; }
-        .btn:hover { background: #2980b9; }
-        .btn:disabled { background: #bdc3c7; cursor: not-allowed; }
-        .correct { color: #27ae60; }
-        .wrong { color: #c0392b; }
+        :root { --primary: #2c3e50; --accent: #e67e22; --success: #27ae60; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #ecf0f1; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .container { background: white; width: 90%; max-width: 700px; padding: 30px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); }
+        
+        /* 介紹頁面樣式 */
+        #intro-section { line-height: 1.6; }
+        .highlight-box { background: #fdf2e9; border-left: 5px solid var(--accent); padding: 15px; margin: 15px 0; }
+        
+        /* 挑戰頁面樣式 */
+        #quiz-section { display: none; text-align: center; }
+        .countdown { font-size: 3rem; color: var(--accent); font-weight: bold; height: 80px; }
+        .question-display { font-size: 1.4rem; margin: 20px 0; padding: 20px; background: #f9f9f9; border-radius: 10px; }
+        .blank { border-bottom: 3px solid var(--primary); color: var(--accent); padding: 0 10px; min-width: 80px; display: inline-block; }
+        
+        #status-indicator { font-size: 0.9rem; color: #7f8c8d; margin-top: 10px; }
+        .btn { background: var(--primary); color: white; border: none; padding: 12px 30px; border-radius: 30px; cursor: pointer; font-size: 1.1rem; margin-top: 20px; }
+        .btn:hover { opacity: 0.9; }
+        .feedback { margin-top: 20px; font-weight: bold; min-height: 50px; }
     </style>
 </head>
 <body>
 
-<div class="card">
-    <h1>🌍 知識問答大挑戰</h1>
-    <div id="status">準備就緒</div>
-    <div id="question-box">點擊下方按鈕開始學習</div>
-    <div id="result"></div>
-    <button id="start-btn" class="btn">開始回答</button>
+<div class="container">
+    <div id="intro-section">
+        <h1 style="color:var(--primary)">🌎 板塊構造論教學</h1>
+        <p>板塊構造論認為地球的岩石圈是由多個<b>板塊</b>拼合而成，並在<b>軟流圈</b>上移動。</p>
+        <div class="highlight-box">
+            <b>三大邊界類型：</b><br>
+            1. <b>聚合性</b>：板塊擠壓（如海溝、山脈）。<br>
+            2. <b>張裂性</b>：板塊分離（如中洋脊）。<br>
+            3. <b>錯動性</b>：板塊水平摩擦。
+        </div>
+        <p>準備好進行語音測驗了嗎？請確保麥克風已開啟。</p>
+        <button class="btn" onclick="startChallengeMode()">開始語音挑戰</button>
+    </div>
+
+    <div id="quiz-section">
+        <h2 id="cat-title">知識問答</h2>
+        <div class="countdown" id="timer"></div>
+        <div class="question-display" id="q-text"></div>
+        <div id="status-indicator">等待指令...</div>
+        <div id="feedback-text" class="feedback"></div>
+    </div>
 </div>
 
 <script>
-$(document).ready(function() {
-    // 1. 定義問題與答案數據
-    const quizData = [
-        { cat: "地理", q: "世界上最長的河流是哪一條？", a: "尼羅河" },
-        { cat: "藝術", q: "經典畫作《蒙娜麗莎》是由誰繪製的？", a: "達芬奇" },
-        { cat: "科技", q: "韓國最大的科技公司是哪一家？", a: "三星" },
-        { cat: "科學", q: "水的化學符號是什麼？", a: "H2O" },
-        { cat: "人體", q: "人體最大的器官是什麼？", a: "皮膚" },
-        { cat: "時間", q: "一年（非閏年）共有多少天？", a: "365" },
-        { cat: "生活", q: "由冰塊蓋成的房子稱為什麼？", a: "雪屋" },
-        { cat: "數學", q: "64 的平方根是多少？", a: "8" },
-        { cat: "腦筋急轉彎", q: "哪一個月有 28 天？", a: "每個月" }
-    ];
+// 1. 題目數據庫
+const quizData = [
+    { q: "地球的最外層是由____拼合而成的。", a: "板塊", d: "沒錯！岩石圈由大大小小的板塊組成，就像拼圖一樣。" },
+    { q: "板塊是在哪一層構造之上進行移動的？答案是____。", a: "軟流圈", d: "正確。軟流圈具有塑性，讓上方的板塊可以滑動。" },
+    { q: "當板塊互相擠壓，這種邊界稱為____板塊邊界。", a: "聚合", d: "正確。聚合性邊界常會產生海溝和高大的山脈。" },
+    { q: "兩板塊分離，形成新地殼的邊界稱為____性邊界。", a: "張裂", d: "對了。例如中洋脊就是典型的張裂性板塊邊界。" },
+    { q: "板塊移動的主因是地函的____現象。", a: "對流", d: "非常棒。地函橫向密度變化產生的對流是板塊運動的動力源。" }
+];
 
-    let currentIndex = 0;
+let currentIndex = 0;
+const synth = window.speechSynthesis;
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+const recognition = new SpeechRecognition();
 
-    // 2. 初始化語音合成 (TTS) 與 語音識別 (STT)
-    const synth = window.speechSynthesis;
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    const recognition = new SpeechRecognition();
+recognition.lang = 'zh-HK'; // 設定為粵語，國語請改 zh-TW
+recognition.interimResults = false;
 
-    recognition.lang = 'zh-HK'; // 可改為 'zh-CN' 或 'zh-TW'
-    recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
+// 2. 切換到挑戰模式
+function startChallengeMode() {
+    $('#intro-section').hide();
+    $('#quiz-section').fadeIn();
+    loadQuestion();
+}
 
-    // 3. 播放語音函數
-    function speak(text, callback) {
-        const utter = new SpeechSynthesisUtterance(text);
-        utter.lang = 'zh-HK';
-        utter.onend = callback;
-        synth.speak(utter);
+// 3. 載入題目
+function loadQuestion() {
+    if (currentIndex >= quizData.length) {
+        $('#q-text').html("🎉 恭喜完成所有課程！");
+        speak("恭喜你，已經掌握了板塊構造論的基本知識。");
+        return;
     }
-
-    // 4. 開始流程
-    $('#start-btn').click(function() {
-        startQuiz();
+    
+    let item = quizData[currentIndex];
+    let displayQ = item.q.replace("____", "<span class='blank'>？</span>");
+    $('#q-text').html(displayQ);
+    $('#feedback-text').text("");
+    
+    // 朗讀題目
+    speak(item.q.replace("____", "什麼"), function() {
+        startCountdown();
     });
+}
 
-    function startQuiz() {
-        if (currentIndex >= quizData.length) {
-            $('#question-box').text("恭喜！你已完成所有題目！");
-            speak("恭喜！你已完成所有題目！");
-            currentIndex = 0;
-            return;
-        }
-
-        let currentQ = quizData[currentIndex];
-        $('#question-box').text(`[${currentQ.cat}] ${currentQ.q}`);
-        $('#result').text("");
-        $('#start-btn').prop('disabled', true);
-        
-        // 先讀出問題，讀完後啟動麥克風
-        speak(currentQ.q, function() {
-            startListening();
-        });
-    }
-
-    // 5. 啟動麥克風聽取回答
-    function startListening() {
-        $('#status').text("正在聽取你的回答...");
-        recognition.start();
-    }
-
-    // 6. 語音識別結果處理
-    recognition.onresult = function(event) {
-        const userAnswer = event.results[0][0].transcript;
-        const correctAnswer = quizData[currentIndex].a;
-        
-        $('#status').text("分析中...");
-        
-        // 簡單的比對邏輯 (判斷是否包含關鍵字)
-        if (userAnswer.includes(correctAnswer) || (correctAnswer === "H2O" && userAnswer.toLowerCase().includes("h2o"))) {
-            $('#result').html(`<span class="correct">正確！你說的是：${userAnswer}</span>`);
-            speak("答對了，太棒了！", function() {
-                currentIndex++;
-                setTimeout(startQuiz, 1000);
-            });
+// 4. 倒數 3, 2, 1 邏輯
+function startCountdown() {
+    let count = 3;
+    $('#timer').text(count);
+    
+    const interval = setInterval(() => {
+        count--;
+        if (count > 0) {
+            $('#timer').text(count);
+            // 可以選擇加入倒數聲效
         } else {
-            $('#result').html(`<span class="wrong">可惜！你說的是：${userAnswer}，正確答案是：${correctAnswer}</span>`);
-            speak("不太正確喔，再試試看吧。", function() {
-                $('#start-btn').prop('disabled', false).text("重試這一題");
-            });
+            clearInterval(interval);
+            $('#timer').text("請說話...");
+            startListening();
         }
-    };
+    }, 1000);
+}
 
-    recognition.onspeechend = function() {
-        recognition.stop();
-        $('#status').text("準備就緒");
-    };
+// 5. 語音辨識
+function startListening() {
+    $('#status-indicator').text("🎤 麥克風已開啟...");
+    recognition.start();
+}
 
-    recognition.onerror = function(event) {
-        $('#status').text("錯誤: " + event.error);
-        $('#start-btn').prop('disabled', false);
-    };
-});
+recognition.onresult = function(event) {
+    const userAnswer = event.results[0][0].transcript;
+    const item = quizData[currentIndex];
+    
+    $('#status-indicator').text("辨識內容：" + userAnswer);
+    
+    if (userAnswer.includes(item.a)) {
+        // 答對了
+        $('#feedback-text').html(`<span style="color:var(--success)">✅ 答對了！</span>`);
+        $('#timer').text("👍");
+        speak(item.d, function() {
+            currentIndex++;
+            setTimeout(loadQuestion, 1000);
+        });
+    } else {
+        // 答錯了
+        $('#feedback-text').html(`<span style="color:#e74c3c">❌ 聽起來不太像... 再試一次</span>`);
+        retryFlow();
+    }
+};
+
+// 6. 錯誤處理與自動重錄
+recognition.onerror = function() {
+    $('#status-indicator').text("未檢測到聲音。");
+    retryFlow();
+};
+
+function retryFlow() {
+    recognition.stop();
+    setTimeout(() => {
+        $('#status-indicator').text("1.5 秒後重新錄音...");
+        setTimeout(startCountdown, 1500); // 1.5秒後重啟倒數
+    }, 100);
+}
+
+// 語音播放輔助函數
+function speak(text, callback) {
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = 'zh-HK'; 
+    utter.rate = 1.1; // 稍微快一點比較生動
+    utter.onend = callback;
+    synth.speak(utter);
+}
 </script>
 
 </body>
