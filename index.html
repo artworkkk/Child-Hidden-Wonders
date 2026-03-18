@@ -12,7 +12,6 @@
             --danger: #e74c3c; 
             --success: #2ecc71; 
             --bg: #f8f9fa;
-            --text: #2c3e50;
         }
 
         body, html { 
@@ -28,48 +27,32 @@
             border-radius: 30px;
             box-shadow: 0 15px 45px rgba(0,0,0,0.08);
             text-align: center;
-            min-height: 500px;
+            min-height: 520px;
             display: flex; flex-direction: column;
-            justify-content: space-between; /* 讓內容與底部按鈕分開 */
+            justify-content: space-between;
         }
 
-        /* 首頁設計：極簡清爽 */
+        /* 首頁 */
         #intro-page h1 { color: var(--primary); font-size: 2.4rem; margin-top: 50px; }
         .intro-desc { font-size: 1.2rem; color: #7f8c8d; line-height: 1.8; margin-bottom: 40px; }
 
-        /* 答題頁面：加入提示詞 */
+        /* 答題頁 */
         #quiz-page { display: none; flex-direction: column; height: 100%; }
-        #main-status { font-size: 1.5rem; font-weight: bold; color: var(--primary); margin-bottom: 10px; }
+        #main-status { font-size: 1.5rem; font-weight: bold; color: var(--primary); margin-bottom: 10px; min-height: 35px; }
         #timer-display { font-size: 4rem; color: var(--accent); font-weight: 900; height: 80px; }
-        #question-text { font-size: 1.5rem; line-height: 1.6; color: var(--text); margin: 20px 0; min-height: 80px; }
-        .blank-space { color: var(--primary); border-bottom: 3px solid var(--primary); padding: 0 10px; }
+        #question-text { font-size: 1.5rem; line-height: 1.6; color: #2c3e50; margin: 20px 0; min-height: 90px; }
+        .blank-space { color: var(--primary); border-bottom: 3px solid var(--primary); padding: 0 10px; font-weight: bold; }
 
-        /* 提示詞庫佈局 */
-        .hint-container {
-            background: #f1f4f6; padding: 15px; border-radius: 15px;
-            margin-bottom: 20px;
-        }
-        .hint-title { font-size: 0.9rem; color: #95a5a6; margin-bottom: 10px; display: block; }
+        /* 提示詞庫 */
+        .hint-container { background: #f1f4f6; padding: 15px; border-radius: 15px; margin-bottom: 20px; }
         .hint-grid { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
-        .hint-item { 
-            background: white; padding: 5px 12px; border-radius: 8px;
-            font-size: 0.95rem; color: #555; border: 1px solid #ddd;
-        }
+        .hint-item { background: white; padding: 5px 12px; border-radius: 8px; font-size: 0.95rem; color: #555; border: 1px solid #ddd; }
 
         /* 按鈕樣式 */
         .btn-group { margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee; }
-        .btn {
-            border: none; padding: 15px 40px; border-radius: 50px; 
-            font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: 0.3s;
-        }
-        .btn-primary { 
-            background: var(--primary); color: white;
-            box-shadow: 0 8px 15px rgba(52, 152, 219, 0.2);
-        }
-        .btn-outline { 
-            background: transparent; color: #95a5a6; border: 2px solid #ddd;
-            padding: 10px 30px; font-size: 0.9rem;
-        }
+        .btn { border: none; padding: 15px 40px; border-radius: 50px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn-primary { background: var(--primary); color: white; box-shadow: 0 8px 15px rgba(52, 152, 219, 0.2); }
+        .btn-exit { background: #eee; color: #777; padding: 10px 30px; font-size: 0.9rem; }
         .btn:hover { opacity: 0.9; transform: translateY(-2px); }
 
         /* 錯誤 Overlay */
@@ -86,12 +69,8 @@
     <div class="main-container">
         <div id="intro-page">
             <div>
-                <h1>常識科問習遊戲</h1>
-                <p class="intro-desc">
-                    歡迎來到語音溫習系統。<br>
-                    請聆聽問題，並在倒數結束後說出正確答案。<br>
-                    準備好了嗎？
-                </p>
+                <h1>常識科溫習遊戲</h1>
+                <p class="intro-desc">聆聽問題並說出正確答案。<br>如果 3 秒內沒偵測到聲音，系統會自動重試。</p>
             </div>
             <button id="btn-start" class="btn btn-primary">開始挑戰</button>
         </div>
@@ -104,7 +83,6 @@
             </div>
 
             <div class="hint-container">
-                <span class="hint-title">💡 提示詞庫：</span>
                 <div class="hint-grid">
                     <div class="hint-item">生活</div><div class="hint-item">特色</div><div class="hint-item">友好</div>
                     <div class="hint-item">探究</div><div class="hint-item">熱身</div><div class="hint-item">愛護</div>
@@ -114,13 +92,13 @@
             </div>
 
             <div class="btn-group">
-                <button id="btn-back" class="btn btn-outline">返回首頁</button>
+                <button id="btn-exit" class="btn btn-exit">退出</button>
             </div>
         </div>
     </div>
 
     <div id="error-overlay">
-        <h2 style="font-size: 3rem;">❌ 答錯了或收音失敗</h2>
+        <h2 id="error-title" style="font-size: 3rem;">❌ 答錯了</h2>
         <p id="retry-timer-text" style="font-size: 1.5rem;">請準備，3 秒後重新補答</p>
     </div>
 
@@ -140,12 +118,13 @@ $(document).ready(function() {
     ];
 
     let currentIndex = 0;
+    let silenceTimer; // 3秒靜音計時器
     const synth = window.speechSynthesis;
     const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
     let recognition = new SpeechRecognition();
     recognition.lang = 'zh-HK';
 
-    // 開始按鈕
+    // 啟動與退出
     $('#btn-start').on('click', function() {
         $('#intro-page').hide();
         $('#quiz-page').css('display', 'flex');
@@ -153,13 +132,17 @@ $(document).ready(function() {
         loadQuestion();
     });
 
-    // 返回按鈕
-    $('#btn-back').on('click', function() {
-        synth.cancel(); // 停止說話
+    $('#btn-exit').on('click', function() {
+        resetApp();
+    });
+
+    function resetApp() {
+        clearTimeout(silenceTimer);
+        synth.cancel();
         recognition.stop();
         $('#quiz-page').hide();
         $('#intro-page').show();
-    });
+    }
 
     function speak(text, callback) {
         const utter = new SpeechSynthesisUtterance(text);
@@ -178,7 +161,9 @@ $(document).ready(function() {
         }
 
         const item = quizData[currentIndex];
+        // 核心修改 1：重置畫面內容，確保空位是「？」
         $('#question-text').html(`${currentIndex+1}. ${item.q.replace("____", "<span class='blank-space'>？</span>")}`);
+        $('#main-status').text("準備中").css("color", "var(--primary)");
         
         speak(item.q.replace("____", "什麼"), function() {
             promptAndCount();
@@ -201,32 +186,58 @@ $(document).ready(function() {
                 $('#timer-display').text(count);
             } else {
                 clearInterval(timer);
-                $('#timer-display').text("🎤");
-                $('#main-status').text("請說話...").css("color", "var(--success)");
-                recognition.start();
+                startRecognitionProcess();
             }
         }, 1000);
     }
 
+    function startRecognitionProcess() {
+        $('#timer-display').text("🎤");
+        $('#main-status').text("請說話...").css("color", "var(--success)");
+        recognition.start();
+
+        // 核心修改 2：啟動 3 秒靜音計時器
+        clearTimeout(silenceTimer);
+        silenceTimer = setTimeout(() => {
+            recognition.stop();
+            handleSilence();
+        }, 3000); 
+    }
+
     recognition.onresult = function(event) {
+        clearTimeout(silenceTimer); // 有結果，清除計時器
         const result = event.results[0][0].transcript;
         const item = quizData[currentIndex];
 
         if (result.includes(item.a)) {
             $('#main-status').text("✅ 正確").css("color", "var(--success)");
+            // 答對後暫時顯示正確答案，但在跳題前 loadQuestion 會重置它
+            $('#question-text').find('.blank-space').text(item.a); 
             speak(item.d, function() {
                 currentIndex++;
-                loadQuestion();
+                setTimeout(loadQuestion, 500);
             });
         } else {
-            showErrorAlert();
+            showErrorAlert("❌ 答錯了");
         }
     };
 
-    recognition.onerror = function() { showErrorAlert(); };
+    // 處理無人說話的情況
+    function handleSilence() {
+        $('#main-status').text("無人說話...").css("color", "var(--danger)");
+        setTimeout(() => {
+            showErrorAlert("⌛ 偵測不到聲音", true);
+        }, 500); // 暫停 0.5 秒後彈出提示
+    }
 
-    function showErrorAlert() {
+    recognition.onerror = function() {
+        clearTimeout(silenceTimer);
+        showErrorAlert("⚠️ 錄音錯誤");
+    };
+
+    function showErrorAlert(title, isSilence = false) {
         recognition.stop();
+        $('#error-title').text(title);
         $('#error-overlay').css('display', 'flex');
         
         let timeLeft = 3;
