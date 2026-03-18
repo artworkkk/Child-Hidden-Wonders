@@ -70,7 +70,7 @@
         <div id="intro-page">
             <div>
                 <h1>常識科溫習遊戲</h1>
-                <p class="intro-desc">聆聽問題並說出正確答案。<br>如果 3 秒內沒偵測到聲音，系統會自動重試。</p>
+                <p class="intro-desc">聆聽問題並說出正確答案。<br>如果 <b style="color:var(--danger)">10 秒</b>內沒偵測到聲音，系統會自動重試。</p>
             </div>
             <button id="btn-start" class="btn btn-primary">開始挑戰</button>
         </div>
@@ -118,13 +118,13 @@ $(document).ready(function() {
     ];
 
     let currentIndex = 0;
-    let silenceTimer; // 3秒靜音計時器
+    let silenceTimer; 
     const synth = window.speechSynthesis;
     const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
     let recognition = new SpeechRecognition();
     recognition.lang = 'zh-HK';
 
-    // 啟動與退出
+    // 啟動按鈕
     $('#btn-start').on('click', function() {
         $('#intro-page').hide();
         $('#quiz-page').css('display', 'flex');
@@ -132,6 +132,7 @@ $(document).ready(function() {
         loadQuestion();
     });
 
+    // 退出按鈕：完全清理狀態並回首頁
     $('#btn-exit').on('click', function() {
         resetApp();
     });
@@ -161,7 +162,7 @@ $(document).ready(function() {
         }
 
         const item = quizData[currentIndex];
-        // 核心修改 1：重置畫面內容，確保空位是「？」
+        // 進入新題目時重置空白處為「？」
         $('#question-text').html(`${currentIndex+1}. ${item.q.replace("____", "<span class='blank-space'>？</span>")}`);
         $('#main-status').text("準備中").css("color", "var(--primary)");
         
@@ -196,22 +197,22 @@ $(document).ready(function() {
         $('#main-status').text("請說話...").css("color", "var(--success)");
         recognition.start();
 
-        // 核心修改 2：啟動 3 秒靜音計時器
+        // 核心修改：靜音自動重試時間改為 10 秒 (10000ms)
         clearTimeout(silenceTimer);
         silenceTimer = setTimeout(() => {
             recognition.stop();
             handleSilence();
-        }, 3000); 
+        }, 10000); 
     }
 
     recognition.onresult = function(event) {
-        clearTimeout(silenceTimer); // 有結果，清除計時器
+        clearTimeout(silenceTimer); 
         const result = event.results[0][0].transcript;
         const item = quizData[currentIndex];
 
         if (result.includes(item.a)) {
             $('#main-status').text("✅ 正確").css("color", "var(--success)");
-            // 答對後暫時顯示正確答案，但在跳題前 loadQuestion 會重置它
+            // 答對時在畫面上填入答案
             $('#question-text').find('.blank-space').text(item.a); 
             speak(item.d, function() {
                 currentIndex++;
@@ -222,16 +223,17 @@ $(document).ready(function() {
         }
     };
 
-    // 處理無人說話的情況
     function handleSilence() {
-        $('#main-status').text("無人說話...").css("color", "var(--danger)");
+        $('#main-status').text("未偵測到回應...").css("color", "var(--danger)");
+        // 暫停 0.5 秒後彈出錯誤畫面
         setTimeout(() => {
             showErrorAlert("⌛ 偵測不到聲音", true);
-        }, 500); // 暫停 0.5 秒後彈出提示
+        }, 500); 
     }
 
     recognition.onerror = function() {
         clearTimeout(silenceTimer);
+        // 如果是收音錯誤也觸發補答
         showErrorAlert("⚠️ 錄音錯誤");
     };
 
@@ -250,7 +252,7 @@ $(document).ready(function() {
             } else {
                 clearInterval(retryInt);
                 $('#error-overlay').hide();
-                promptAndCount(); 
+                promptAndCount(); // 重新回到「請準備作答」流程
             }
         }, 1000);
     }
