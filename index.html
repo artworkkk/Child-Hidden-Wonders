@@ -1,364 +1,405 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>互動地科：地球板塊移動</title>
-    <!-- 引入 jQuery -->
+    <title>常識科：智力大挑戰</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
-        /* ================= 頁面設計 (CSS) ================= */
-        :root {
-            --primary-color: #2c3e50;
-            --secondary-color: #27ae60;
-            --bg-color: #ecf0f1;
-            --text-color: #333;
+        :root { 
+            --primary: #0984e3; 
+            --primary-light: #74b9ff; 
+            --accent: #fdcb6e; 
+            --danger: #ff7675; 
+            --danger-dark: #d63031;
+            --success: #00b894; 
+            --success-dark: #009476;
+            --text-main: #2d3436;
+            --bg-color: #f0f9ff;
         }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
+
+        body, html { 
+            height: 100%; margin: 0; 
+            font-family: '微軟正黑體', 'Microsoft JhengHei', sans-serif; 
+            /* 活潑的波點背景 */
             background-color: var(--bg-color);
-            color: var(--text-color);
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-        /* 頂部選單 */
-        header {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1000;
-            box-sizing: border-box;
-        }
-        #menu-btn {
-            background: none;
-            border: 1px solid white;
-            color: white;
-            padding: 5px 10px;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-        /* 隱藏的側邊選單 */
-        #sidebar {
-            position: fixed;
-            left: -250px;
-            top: 60px;
-            width: 250px;
-            height: calc(100% - 60px);
-            background: white;
-            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
-            transition: 0.3s;
-            z-index: 999;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-        #sidebar.active { left: 0; }
-        #sidebar ul { list-style: none; padding: 0; }
-        #sidebar li { padding: 10px 0; border-bottom: 1px solid #ddd; cursor: pointer; }
-        #sidebar li:hover { color: var(--secondary-color); font-weight: bold; }
-
-        /* 主要內容區 */
-        main {
-            margin-top: 70px;
-            margin-bottom: 80px;
-            padding: 20px;
-            flex-grow: 1;
-            max-width: 800px;
-            margin-left: auto;
-            margin-right: auto;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        .page { display: none; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .page.active { display: block; }
-        .page img { max-width: 100%; border-radius: 8px; margin-top: 15px; }
-
-        /* 語音助手 UI */
-        #voice-assistant {
-            position: fixed;
-            right: 20px;
-            bottom: 100px;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            z-index: 1000;
-        }
-        #mic-btn {
-            width: 60px;
-            height: 60px;
-            background-color: #e74c3c;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            font-size: 24px;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(231, 76, 60, 0.5);
-            transition: 0.3s;
-        }
-        #mic-btn.listening {
-            animation: pulse 1.5s infinite;
-            background-color: #c0392b;
-        }
-        @keyframes pulse {
-            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7); }
-            70% { transform: scale(1.1); box-shadow: 0 0 0 15px rgba(231, 76, 60, 0); }
-            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); }
-        }
-        #chat-box {
-            background: white;
-            padding: 10px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-            margin-bottom: 10px;
-            width: 250px;
-            display: none;
-            font-size: 14px;
+            background-image: radial-gradient(#bae6fd 2px, transparent 2px);
+            background-size: 30px 30px;
+            display: flex; justify-content: center; align-items: center;
         }
 
-        /* 底部導覽列 */
-        footer {
-            background-color: var(--primary-color);
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            padding: 15px;
-            display: flex;
-            justify-content: space-around;
-            box-sizing: border-box;
-            z-index: 1000;
+        .main-container {
+            width: 95%; max-width: 800px;
+            background: #ffffff;
+            padding: 35px; 
+            border-radius: 35px;
+            /* 遊戲卡片立體陰影 */
+            box-shadow: 0 15px 35px rgba(9, 132, 227, 0.15), 0 5px 15px rgba(0,0,0,0.05);
+            border: 6px solid #ffffff;
+            text-align: center;
+            min-height: 580px;
+            display: flex; flex-direction: column;
+            position: relative; overflow: hidden;
         }
-        footer button {
-            background: var(--secondary-color);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
+
+        /* 遊戲化進度條 */
+        .progress-container { 
+            width: 100%; height: 16px; 
+            background: #ecf0f1; 
+            border-radius: 20px; 
+            margin-bottom: 25px; 
+            overflow: hidden;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
         }
-        footer button:hover { background: #219a52; }
-        #btn-home { background: #e67e22; }
+        #progress-bar { 
+            width: 0%; height: 100%; 
+            background: linear-gradient(90deg, var(--primary-light), var(--primary)); 
+            border-radius: 20px; 
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); 
+        }
+
+        /* 首頁設計 */
+        #intro-page { display: flex; flex-direction: column; align-items: center; }
+        .mascot { font-size: 5.5rem; animation: bounce 2s infinite; margin-bottom: 10px; }
+        #intro-page h1 { 
+            color: var(--primary); font-size: 2.8rem; margin-top: 0;
+            text-shadow: 3px 3px 0px #dfe6e9; 
+        }
+        .intro-card { 
+            background: #fdfbf7; padding: 25px; border-radius: 20px; 
+            border: 2px dashed #b2bec3; margin-bottom: 35px; width: 80%;
+        }
+        .intro-card p { font-size: 1.2rem; color: #636e72; line-height: 1.6; margin: 0; }
+
+        /* 答題頁面 */
+        #quiz-page { display: none; flex-direction: column; flex-grow: 1; }
+        #main-status { font-size: 1.5rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+        #timer-display { 
+            font-size: 5.5rem; font-weight: 900; height: 110px; 
+            display: flex; align-items: center; justify-content: center; 
+            text-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        #question-box { 
+            background: #f8fbff; padding: 30px 25px; border-radius: 25px; 
+            border: 3px solid var(--primary-light); 
+            box-shadow: 0 8px 20px rgba(116, 185, 255, 0.15);
+            margin: 15px 0 25px 0; min-height: 100px; 
+            display: flex; align-items: center; justify-content: center; 
+        }
+        #question-text { font-size: 1.7rem; color: var(--text-main); line-height: 1.6; font-weight: bold; }
+        
+        /* 填空處樣式 */
+        .blank-space { 
+            color: var(--primary); 
+            border-bottom: 4px dashed var(--primary); 
+            padding: 0 15px; margin: 0 5px;
+            font-weight: 900; min-width: 70px; display: inline-block; 
+            text-align: center;
+        }
+
+        /* 詞語庫 (Hint) */
+        .hint-section { margin-top: auto; padding: 20px; background: #fff; border-radius: 25px; border: 2px solid #ecf0f1; }
+        .hint-title { text-align: left; font-size: 1.1rem; font-weight: bold; color: #a4b0be; margin-bottom: 12px; }
+        .hint-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+        .hint-item { 
+            background: #fff; padding: 12px 5px; border-radius: 12px; 
+            font-size: 1.1rem; font-weight: bold; color: var(--primary); 
+            border: 2px solid var(--primary-light); 
+            box-shadow: 0 4px 0 var(--primary-light); /* 按鈕立體感 */
+        }
+
+        /* 遊戲按鈕設計 */
+        .btn { font-family: inherit; font-weight: 900; cursor: pointer; transition: all 0.1s; }
+        .btn-start { 
+            background: var(--success); color: white; font-size: 1.5rem; 
+            padding: 18px 50px; border-radius: 50px; border: none;
+            box-shadow: 0 6px 0 var(--success-dark), 0 15px 20px rgba(0,0,0,0.15);
+        }
+        .btn-start:active { transform: translateY(6px); box-shadow: 0 0 0 var(--success-dark); }
+        
+        .btn-exit { 
+            background: #dfe6e9; color: #636e72; font-size: 1rem; 
+            padding: 12px 30px; margin-top: 25px; border-radius: 50px; 
+            border: none; align-self: center; box-shadow: 0 4px 0 #b2bec3;
+        }
+        .btn-exit:active { transform: translateY(4px); box-shadow: 0 0 0 #b2bec3; }
+
+        /* 動畫效果 */
+        @keyframes bounce { 
+            0%, 100% { transform: translateY(0); } 
+            50% { transform: translateY(-15px); } 
+        }
+        .recording-icon { animation: pulse 1s infinite; }
+        @keyframes pulse { 
+            0% { transform: scale(1); } 
+            50% { transform: scale(1.15); } 
+            100% { transform: scale(1); } 
+        }
+
+        /* 錯誤 Modal Overlay */
+        #error-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(45, 52, 54, 0.7); backdrop-filter: blur(5px); z-index: 9999;
+            align-items: center; justify-content: center;
+        }
+        .error-modal {
+            background: white; padding: 40px; border-radius: 30px; text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3); border: 5px solid var(--danger);
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); max-width: 80%;
+        }
+        @keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        #error-title { color: var(--danger); font-size: 2.5rem; margin-top: 0; }
+        #retry-timer-text { font-size: 1.3rem; color: #636e72; font-weight: bold; margin-bottom: 0; }
+        
     </style>
 </head>
 <body>
 
-    <!-- 頂部區 -->
-    <header>
-        <button id="menu-btn">☰ 目錄</button>
-        <h2 id="page-title">第一頁：封面</h2>
-        <div>📖</div>
-    </header>
+    <div class="main-container">
+        <div class="progress-container"><div id="progress-bar"></div></div>
 
-    <!-- 側邊選單 -->
-    <nav id="sidebar">
-        <ul id="menu-list">
-            <!-- 由 JS 動態生成 -->
-        </ul>
-    </nav>
+        <div id="intro-page">
+            <div class="mascot">🦉</div>
+            <h1>常識科大挑戰</h1>
+            <div class="intro-card">
+                <p>請聆聽題目，然後對準麥克風說出答案。<br><b>連續答錯 3 次</b>會自動顯示答案並跳題喔！</p>
+            </div>
+            <button id="btn-start" class="btn btn-start">▶️ 立即開始</button>
+        </div>
 
-    <!-- 內容區 -->
-    <main id="content">
-        <!-- 10頁內容 -->
-        <div class="page active" data-page="1">
-            <h3>簡介與封面</h3>
-            <p>歡迎來到《地球板塊移動》互動教科書。在這裡，我們將探索地球表面的動態變化。</p>
-            <p>👉 <strong>提示：</strong> 如果你有不懂的地方，可以點擊右下角的「🎤」麥克風按鈕，對著電腦問問題！例如問：「什麼是板塊？」</p>
+        <div id="quiz-page">
+            <div id="main-status">準備就緒</div>
+            <div id="timer-display">🎧</div>
+            <div id="question-box"><div id="question-text">載入中...</div></div>
+            <div class="hint-section">
+                <div class="hint-title">💡 詞語庫 (請從以下選出答案)</div>
+                <div id="hint-grid" class="hint-grid"></div>
+            </div>
+            <button id="btn-exit" class="btn btn-exit">🚪 退出結束</button>
         </div>
-        <div class="page" data-page="2">
-            <h3>地球的內部構造</h3>
-            <p>地球並不是一顆堅硬的實心球。它分為地殼、地函與地核。板塊主要由地殼與上部地函的岩石圈組成，漂浮在具有塑性的軟流圈之上。</p>
-        </div>
-        <div class="page" data-page="3">
-            <h3>什麼是板塊構造學說？</h3>
-            <p>板塊構造學說認為，地球的岩石圈破裂成許多巨大的「板塊」，這些板塊在軟流圈上緩慢移動，導致了地震、火山和造山運動。</p>
-        </div>
-        <div class="page" data-page="4">
-            <h3>大陸漂移假說</h3>
-            <p>1912年，韋格納提出「大陸漂移假說」，認為億萬年前地球只有一個「盤古大陸」，後來分裂並漂移到現在的位置。</p>
-        </div>
-        <div class="page" data-page="5">
-            <h3>海底擴張學說</h3>
-            <p>科學家發現海底的中洋脊不斷湧出岩漿，形成新的海洋地殼，將舊的地殼向兩側推擠，這就是海底擴張，也是推動板塊的動力之一。</p>
-        </div>
-        <div class="page" data-page="6">
-            <h3>板塊邊界類型 1：聚合性</h3>
-            <p>當兩個板塊互相靠近、碰撞時，稱為聚合性板塊邊界。這裡常形成高山（如喜馬拉雅山）或海溝。</p>
-        </div>
-        <div class="page" data-page="7">
-            <h3>板塊邊界類型 2：張裂性</h3>
-            <p>當兩個板塊互相遠離時，稱為張裂性板塊邊界。岩漿會從裂縫中湧出，形成中洋脊或裂谷（如東非大裂谷）。</p>
-        </div>
-        <div class="page" data-page="8">
-            <h3>板塊邊界類型 3：錯動性</h3>
-            <p>當兩個板塊互相水平摩擦、錯開時，稱為錯動性板塊邊界。這裡不會產生或消滅地殼，但常發生淺層地震（如聖安地列斯斷層）。</p>
-        </div>
-        <div class="page" data-page="9">
-            <h3>板塊移動的影響</h3>
-            <p>板塊的移動造就了地球豐富的地貌，同時也是引發地震、海嘯和火山爆發的主要原因。環太平洋火山地震帶就是板塊運動活躍的區域。</p>
-        </div>
-        <div class="page" data-page="10">
-            <h3>總結與互動測驗</h3>
-            <p>恭喜你完成了學習！地球是活的，板塊的移動至今仍在繼續。試著用語音問問電腦：「地球板塊移動的動力是什麼？」</p>
-        </div>
-    </main>
-
-    <!-- 語音助手區 -->
-    <div id="voice-assistant">
-        <div id="chat-box">
-            <strong style="color:var(--secondary-color)">同學：</strong><span id="user-text">...</span><br>
-            <strong style="color:var(--primary-color)">老師：</strong><span id="ai-text">...</span>
-        </div>
-        <button id="mic-btn" title="點擊發問">🎤</button>
     </div>
 
-    <!-- 底部控制區 -->
-    <footer>
-        <button id="btn-prev">⬅ 上一頁</button>
-        <button id="btn-home">🏠 返回首頁 (退出)</button>
-        <button id="btn-next">下一頁 ➡</button>
-    </footer>
+    <!-- 錯誤提示彈窗 -->
+    <div id="error-overlay">
+        <div class="error-modal">
+            <h2 id="error-title">❌ 答錯了</h2>
+            <p id="retry-timer-text">請準備，3 秒後重新補答</p>
+        </div>
+    </div>
 
-    <!-- ================= 互動邏輯 (JavaScript & jQuery) ================= -->
-    <script>
-        $(document).ready(function() {
-            let currentPage = 1;
-            const totalPages = 10;
-            const titles = [
-                "封面與簡介", "地球的內部構造", "什麼是板塊構造學說？", "大陸漂移假說", 
-                "海底擴張學說", "聚合性板塊邊界", "張裂性板塊邊界", "錯動性板塊邊界", 
-                "板塊移動的影響", "總結與測驗"
-            ];
+<script>
+$(document).ready(function() {
+    const originalQuiz =[
+        { q: "不同的服務人員為我們提供不同的服務，為____帶來方便。", a: "生活", d: "沒錯！生活更便利了。" },
+        { q: "香港的社區有不同的____，例如：到沙田城門河踏單車。", a: "特色", d: "正確！社區特色讓環境更精彩。" },
+        { q: "我們應該與鄰居建立____的關係，令生活更愉快。", a: "友好", d: "答對了！友好關係很重要。" },
+        { q: "發明家要具備____精神、不怕困難及有創意的條件。", a: "探究", d: "厲害！探究精神是發明的開始。" },
+        { q: "游泳前，我們要先做____運動才下水。", a: "熱身", d: "正確！熱身可以保護身體。" },
+        { q: "我們在體育館做運動時，應該____場館內的設施。", a: "愛護", d: "對！愛護公物是好行為。" },
+        { q: "把火藥用作____會危害生命。", a: "武器", d: "沒錯。科技不應用於製造武器。" },
+        { q: "蔡倫以____作為製造紙張的原料之一。", a: "樹皮", d: "正確。蔡倫改良了造紙術。" },
+        { q: "郊遊時，我們不要擅自離隊，要注意____。", a: "安全", d: "沒錯，安全第一。" },
+        { q: "魯班使用鐵片製成了____來伐木。", a: "鋸子", d: "聰明！你完成了這道題！" }
+    ];
 
-            // 1. 初始化側邊選單
-            titles.forEach((title, index) => {
-                $('#menu-list').append(`<li data-target="${index + 1}">第 ${index + 1} 頁: ${title}</li>`);
-            });
+    let currentQuestions =[];
+    let currentIndex = 0;
+    let errorCount = 0; 
+    let silenceTimer;
+    
+    // 語音設定
+    const synth = window.speechSynthesis;
+    let femaleVoice = null;
 
-            // 2. 頁面切換邏輯
-            function updatePage(page) {
-                // jQuery 動畫淡出淡入
-                $('.page').fadeOut(200).promise().done(function() {
-                    $('.page').removeClass('active');
-                    $(`.page[data-page="${page}"]`).fadeIn(200).addClass('active');
-                });
-                
-                $('#page-title').text(`第 ${page} 頁：${titles[page - 1]}`);
-                currentPage = page;
+    // 獲取並篩選女聲
+    function initVoice() {
+        let voices = synth.getVoices();
+        if (voices.length > 0) {
+            // 優先尋找香港女聲 (Sin-ji, Tracy, Google粵語)
+            femaleVoice = voices.find(v => v.lang === 'zh-HK' && (v.name.includes('Sin-ji') || v.name.includes('Tracy') || v.name.includes('Google') || v.name.toLowerCase().includes('female'))) ||
+                          voices.find(v => v.lang === 'zh-HK');
+        }
+    }
+    initVoice();
+    if (speechSynthesis.onvoiceschanged !== undefined) {
+        speechSynthesis.onvoiceschanged = initVoice;
+    }
 
-                // 控制按鈕顯示狀態
-                $('#btn-prev').prop('disabled', currentPage === 1).css('opacity', currentPage === 1 ? 0.5 : 1);
-                $('#btn-next').prop('disabled', currentPage === totalPages).css('opacity', currentPage === totalPages ? 0.5 : 1);
-                
-                // 滾動回頂部
-                window.scrollTo(0, 0);
-            }
+    // 檢查瀏覽器是否支援語音辨識
+    const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
+    let recognition;
+    if (!SpeechRecognition) {
+        alert("⚠️ 你的瀏覽器不支援語音辨識，請使用 Google Chrome 瀏覽器。");
+    } else {
+        recognition = new SpeechRecognition();
+        recognition.lang = 'zh-HK';
+    }
 
-            // 按鈕事件綁定
-            $('#btn-next').click(() => { if (currentPage < totalPages) updatePage(currentPage + 1); });
-            $('#btn-prev').click(() => { if (currentPage > 1) updatePage(currentPage - 1); });
-            $('#btn-home').click(() => { updatePage(1); alert("已返回首頁！"); });
-            
-            // 選單邏輯
-            $('#menu-btn').click(() => $('#sidebar').toggleClass('active'));
-            $('#menu-list li').click(function() {
-                updatePage($(this).data('target'));
-                $('#sidebar').removeClass('active');
-            });
+    function shuffle(array) {
+        let arr = [...array];
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    }
 
-            // ================= 3. 語音辨識與解答系統 (核心功能) =================
-            
-            // 檢查瀏覽器是否支援 Web Speech API
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            const synth = window.speechSynthesis;
-            
-            if (!SpeechRecognition) {
-                alert("您的瀏覽器不支援語音辨識，請使用最新的 Google Chrome 瀏覽器開啟此網頁。");
-                $('#mic-btn').hide();
-            } else {
-                const recognition = new SpeechRecognition();
-                recognition.lang = 'zh-TW'; // 設定語言為繁體中文
-                recognition.interimResults = false; // 只取最終結果
-
-                // 按下麥克風
-                $('#mic-btn').click(function() {
-                    recognition.start();
-                    $('#chat-box').fadeIn();
-                    $('#user-text').text('聆聽中...');
-                    $('#ai-text').text('');
-                    $(this).addClass('listening');
-                    synth.cancel(); // 停止目前的發音
-                });
-
-                // 辨識成功得到文字
-                recognition.onresult = function(event) {
-                    const question = event.results[0][0].transcript;
-                    $('#user-text').text(question);
-                    $('#mic-btn').removeClass('listening');
-                    
-                    // 根據問題給予解答
-                    analyzeAndAnswer(question);
-                };
-
-                // 錯誤處理
-                recognition.onerror = function(event) {
-                    $('#mic-btn').removeClass('listening');
-                    $('#user-text').text('發生錯誤，請再試一次。');
-                };
-            }
-
-            // --- 簡單的自然語言分析 (關鍵字比對) ---
-            function analyzeAndAnswer(question) {
-                let answer = "";
-                // 將問題轉小寫以利比對
-                const q = question.toLowerCase();
-
-                // 科學互動內容知識庫 (Dictionary)
-                if (q.includes("什麼是板塊") || q.includes("板塊是什麼")) {
-                    answer = "板塊是地球岩石圈破裂成的巨大碎塊，包含了地殼和最上層的地函。它們像拼圖一樣覆蓋在地球表面。";
-                } else if (q.includes("大陸漂移")) {
-                    answer = "大陸漂移假說是韋格納提出的，他認為以前地球的大陸是連在一起的，後來才慢慢分開。";
-                } else if (q.includes("動力") || q.includes("為什麼會移動")) {
-                    answer = "板塊移動的主要動力來自於地球內部的「熱對流」。地函中的熱物質上升，冷物質下降，帶動了上方的板塊移動，就像煮沸的湯帶動湯裡的料一樣。";
-                } else if (q.includes("聚合") || q.includes("碰撞")) {
-                    answer = "聚合性板塊邊界就是兩個板塊互相碰撞的地方，這裡很容易形成高山或海溝，例如台灣就是位於板塊的聚合帶喔！";
-                } else if (q.includes("地震") || q.includes("火山")) {
-                    answer = "地震和火山多半發生在板塊的交界處。當板塊互相摩擦、碰撞或拉扯時，累積的能量瞬間釋放，就會引發地震。";
-                } else if (q.includes("張裂")) {
-                    answer = "張裂性邊界是板塊互相遠離的地方，岩漿會跑出來填補縫隙，形成中洋脊。";
-                } else {
-                    // 找不到關鍵字時的預設回答
-                    answer = "這是一個好問題！不過這個部分課本裡可能沒有寫得很詳細。建議你可以問問關於「大陸漂移」、「聚合性邊界」或「板塊移動的動力」相關的問題喔！";
-                }
-
-                $('#ai-text').text(answer);
-                speakAnswer(answer); // 呼叫文字轉語音
-            }
-
-            // --- 文字轉語音 (Text-to-Speech) ---
-            function speakAnswer(text) {
-                if (synth.speaking) {
-                    console.error('speechSynthesis.speaking');
-                    return;
-                }
-                const utterThis = new SpeechSynthesisUtterance(text);
-                utterThis.lang = 'zh-TW'; // 設定語音為繁體中文
-                utterThis.rate = 0.9;     // 語速稍微放慢適合教學
-                utterThis.pitch = 1.2;    // 音調
-                synth.speak(utterThis);
-            }
-
-            // 初始化按鈕狀態
-            updatePage(1);
+    function updateHintGrid() {
+        const answers = originalQuiz.map(item => item.a);
+        const shuffledHints = shuffle(answers);
+        $('#hint-grid').empty();
+        shuffledHints.forEach(word => {
+            $('#hint-grid').append(`<div class="hint-item">${word}</div>`);
         });
-    </script>
+    }
+
+    $('#btn-start').on('click', function() {
+        if (!recognition) return;
+        currentQuestions = shuffle(originalQuiz);
+        updateHintGrid();
+        currentIndex = 0;
+        $('#intro-page').fadeOut(300, function() {
+            $('#quiz-page').css('display', 'flex').hide().fadeIn();
+            loadQuestion();
+        });
+    });
+
+    $('#btn-exit').on('click', function() { resetApp(); });
+
+    function resetApp() {
+        clearTimeout(silenceTimer);
+        synth.cancel();
+        if(recognition) recognition.stop();
+        $('#quiz-page').hide();
+        $('#intro-page').show();
+        $('#progress-bar').css('width', '0%');
+    }
+
+    // 發音優化 (女聲 + 調整語氣)
+    function speak(text, callback) {
+        const utter = new SpeechSynthesisUtterance(text);
+        if (femaleVoice) utter.voice = femaleVoice;
+        else utter.lang = 'zh-HK';
+        
+        utter.pitch = 1.15; // 稍微提高音調讓聲音更溫柔
+        utter.rate = 0.95;  // 放慢一點語速讓學生聽清楚
+        
+        if(callback) utter.onend = callback;
+        synth.speak(utter);
+    }
+
+    function loadQuestion() {
+        if (currentIndex >= currentQuestions.length) {
+            finishQuiz();
+            return;
+        }
+
+        errorCount = 0; 
+        const progress = (currentIndex / currentQuestions.length) * 100;
+        $('#progress-bar').css('width', progress + '%');
+
+        const item = currentQuestions[currentIndex];
+        $('#question-text').html(`${currentIndex + 1}. ${item.q.replace("____", "<span class='blank-space'>？</span>")}`);
+        $('#main-status').html("🔊 <span style='color:var(--primary)'>請聆聽題目</span>");
+        $('#timer-display').text("🎧");
+
+        // 發音時將 ____ 替換為 "什麼" 以符合語境
+        speak(item.q.replace("____", "什麼"), function() {
+            promptAndCount();
+        });
+    }
+
+    function promptAndCount() {
+        $('#main-status').html("⏳ <span style='color:var(--accent)'>準備作答</span>");
+        speak("請準備作答", function() {
+            $('#timer-display').text("1");
+            setTimeout(() => { startRecording(); }, 1000);
+        });
+    }
+
+    function startRecording() {
+        $('#timer-display').html("<div class='recording-icon'>🎙️</div>");
+        $('#main-status').html("🟢 <span style='color:var(--success)'>請對麥克風說話...</span>");
+        try { recognition.start(); } catch(e) {}
+
+        clearTimeout(silenceTimer);
+        silenceTimer = setTimeout(() => {
+            recognition.stop();
+            handleError("⌛ 偵測不到聲音");
+        }, 10000);
+    }
+
+    if(recognition) {
+        recognition.onresult = function(event) {
+            clearTimeout(silenceTimer);
+            const result = event.results[0][0].transcript;
+            const item = currentQuestions[currentIndex];
+
+            if (result.includes(item.a)) {
+                handleSuccess(item);
+            } else {
+                handleError("❌ 答案不正確");
+            }
+        };
+
+        recognition.onerror = function() {
+            clearTimeout(silenceTimer);
+            handleError("⚠️ 收音失敗");
+        };
+    }
+
+    function handleSuccess(item) {
+        $('#main-status').html("✅ <span style='color:var(--success)'>答對了！</span>");
+        $('.blank-space').text(item.a).css({"color": "var(--success)", "border-color": "var(--success)"});
+        speak(item.d, function() {
+            currentIndex++;
+            setTimeout(loadQuestion, 1000);
+        });
+    }
+
+    function handleError(title) {
+        errorCount++; 
+        
+        if (errorCount >= 3) {
+            const item = currentQuestions[currentIndex];
+            $('#main-status').html("⚠️ <span style='color:var(--danger)'>請留意答案</span>");
+            $('.blank-space').text(item.a).css({"color": "var(--accent)", "border-color": "var(--accent)"});
+            
+            speak("不要緊，正確答案是 " + item.a + "。" + item.d, function() {
+                currentIndex++;
+                setTimeout(loadQuestion, 1500);
+            });
+        } else {
+            showErrorOverlay(title);
+        }
+    }
+
+    function showErrorOverlay(title) {
+        $('#error-title').text(title);
+        $('#error-overlay').css('display', 'flex').hide().fadeIn(200);
+        
+        let retryCount = 3;
+        const timer = setInterval(() => {
+            retryCount--;
+            if (retryCount > 0) {
+                $('#retry-timer-text').text(`請準備，${retryCount} 秒後重新補答 (第 ${errorCount}/3 次)`);
+            } else {
+                clearInterval(timer);
+                $('#error-overlay').fadeOut(200);
+                promptAndCount();
+            }
+        }, 1000);
+    }
+
+    function finishQuiz() {
+        $('#progress-bar').css('width', '100%');
+        $('#main-status').html("🏆 <span style='color:var(--success)'>溫習完成</span>");
+        $('#timer-display').html("<div class='mascot' style='animation:none'>🎉</div>");
+        $('#question-text').text("你已經完成所有隨機練習！表現出色！");
+        speak("恭喜你，溫習完成！再接再厲！");
+    }
+});
+</script>
 </body>
 </html>
